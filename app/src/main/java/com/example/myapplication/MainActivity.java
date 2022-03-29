@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import androidx.core.app.ActivityCompat;
@@ -83,10 +84,38 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         // The robot focus is refused.
     }
 
-    public ArrayList<Double> faqHandler(){
-        ArrayList<Double> weight = new ArrayList<Double>();
 
-        return weight;
+
+    public static double[] faqHandler(String[] keyList, double[] foundKeys, double[][] keyweights){
+        double[] understand = new double[keyweights.length];
+        for(int questionNr = 0; questionNr < keyweights.length; questionNr++){
+            double sum = 0;
+            for(int keyWord = 0; keyWord < keyList.length; keyWord++){
+                sum += keyweights[questionNr][keyWord] * foundKeys[keyWord];
+            }
+            understand[questionNr] = sum;
+        }
+        return understand;
+    }
+
+    public static double[] rating(double[] understand, double[] frequency) {
+        double frequParameter = 0.5;
+        double[] rating = new double[understand.length];
+        for (int i = 0; i < understand.length; i++) {
+            rating[i] = understand[i] + frequParameter * frequency[i];
+        }
+        return rating;
+    }
+
+    public static int[] sortedIndices(double[] originalArray)
+    {
+        int len = originalArray.length;
+        double[] sortedCopy = originalArray.clone();
+        int[] indices = new int[len];
+        Arrays.sort(sortedCopy);
+        for (int index = 0; index < len; index++)
+            indices[index] = Arrays.binarySearch(sortedCopy, originalArray[index]);
+        return indices;
     }
 }
 
