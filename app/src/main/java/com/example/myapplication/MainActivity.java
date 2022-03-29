@@ -46,6 +46,8 @@ import org.json.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends RobotActivity implements RobotLifecycleCallbacks {
 
@@ -159,8 +161,11 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     }
 
-    public static double[] faqHandler(String[] keyList, double[] foundKeys, double[][] keyweights){
-        double[] understand = new double[keyweights.length];
+    public static ArrayList<Map<String, Object>> faqHandler(JSONObject parsed, int[] foundKeys){
+        ArrayList<Map<String, Object>> rated_questions = new ArrayList<Map<String, Object>>();
+        ArrayList<Double> weighted_keysums = new ArrayList<Double>;
+        ArrayList<Double> frequencies = new ArrayList<Double>;
+        /*
         for(int questionNr = 0; questionNr < keyweights.length; questionNr++){
             double sum = 0;
             for(int keyWord = 0; keyWord < keyList.length; keyWord++){
@@ -168,16 +173,46 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             }
             understand[questionNr] = sum;
         }
-        return understand;
+*/
+        // calculate weighted_keysums
+        for (Map<String, Object> question : parsed["questions"]) {
+            double sum = 0;
+            for(int keyword : parsed["keywords"]){
+                Int kw_idx = parsed["keywords"].index(keyword);
+                sum += question["keyweights"][kw_idx] * foundKeys[kw_idx];
+            }
+            weighted_keysums.add(sum);
+        }
+
+        // calculate frequencies
+        int total_count = 0;
+        for (Map<String, Object> question : parsed["questions"]) {
+            total_count += question["count"];
+        }
+        for (Map<String, Object> question : parsed["questions"]) {
+            double freq;
+            freq = question["count"] / total_count;
+            frequencies.add(freq * parsed["questions"].length); // correction with number of questions
+        }
+
+        rated_questions = rating(parsed["questions"], weighted_keysums, frequencies);
+
+        return rated_questions;
     }
 
-    public static double[] rating(double[] understand, double[] frequency) {
-        double frequParameter = 0.5;
-        double[] rating = new double[understand.length];
+    public static ArrayList<Map<String, Object>> rating(JSONObject questions, ArrayList<Double> weighted_keysums, ArrayList<Double> frequencies) {
+        // double freqParameter = 0.5;
+        ArrayList<Map<String, Object>> rated_questions;
+        /*double[] rating = new double[understand.length];
         for (int i = 0; i < understand.length; i++) {
-            rating[i] = understand[i] + frequParameter * frequency[i];
+            rating[i] = understand[i] + freqParameter * frequency[i];
+        }*/
+
+        for (int i = 0; i < questions.length(); i++) {
+            double rating = weighted_keysums[i] + frequencies[i];
+            rated_questions.add(Map.of("question", questions[i]["question"], "answer", questions[i]["answer"], "rating", rating);
         }
-        return rating;
+        return rated_questions;
     }
 
     public static int[] sortedIndices(double[] originalArray)
