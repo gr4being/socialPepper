@@ -1,0 +1,39 @@
+{
+  "start": {
+    "type": "talk",
+    "texts": ["Hi", "Hello", "Good Day"],
+    "then": "question1"
+  },
+  "question1": {
+    "type": "question",
+    "texts": ["Question, eh?", "This a question?", "Is this a formal question?"],
+    "answers": [["yes", "yeah", "yo"], ["no", "nah", "nope"], ["maybe", "possible"]],
+    "then": ["animation1", "animationno", "animaybe"]
+  },
+  "animation1": {
+    "type": "animation",
+    "filename": "animationfilename",
+    "then": "talk_something"
+  },
+  "talk_something": {
+    "type": "talk",
+    "texts": ["BlaBla Shit", "I'm talking something"],
+    "then": "animation1"
+  },
+  "display_text": {
+    "type": "display",
+    "texts": ["Touch my Head plz", "Please touch my head"],
+    "then": "waitfortouch"
+  },
+  "waitfortouch": {
+    "type": "eventwait",
+    "event": "Head/Touch",
+    "then": "someother"
+  },
+  "faq": {
+    "type": "action",
+    "action": "faq"/"tictactoe",
+    "then": "animat_after_faq",
+  }
+
+}
