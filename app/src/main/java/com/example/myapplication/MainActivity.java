@@ -10,7 +10,11 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import org.json.simple.parser.JSONParser;
 
+
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +40,10 @@ import com.aldebaran.qi.sdk.object.locale.Language;
 import com.aldebaran.qi.sdk.object.locale.Locale;
 import com.aldebaran.qi.sdk.object.locale.Region;
 import com.aldebaran.qi.sdk.util.PhraseSetUtil;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import java.util.ArrayList;
 
@@ -63,6 +71,16 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     //Das macht der Pepper sobald das Programm startet
     public void onRobotFocusGained(QiContext qiContext) {
+        // get dialogs from file
+        JSONParser parser = new JSONParser();
+        try {
+            JSONObject dialogsObj = (JSONObject) parser.parse(new FileReader("./dialogs.json"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
 
         // Build the action.
         Listen listen = ListenBuilder.with(qiContext)
@@ -109,15 +127,10 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         sayActionFuture.run();
     }
 
-    public void greeting(QiContext qiContext, Profile profile){
+    public void greeting(QiContext qiContext, Profile profile,  JSONObject dialogs){
+
         String greeting;
         String RobotName = "Alpha";
-        if(profile.respect.equals("Du")){
-            greeting = "Hallo, ich heiße "+ RobotName + ". Wie geht es dir?";
-        }else{
-            greeting = "Hallo, ich heiße "+ RobotName + ". Wie geht es Ihnen?";
-        }
-        say(qiContext, greeting);
 
         PhraseSet phraseSetPositiv = PhraseSetBuilder.with(qiContext)
                 .withTexts("gut", "schön")
@@ -131,14 +144,12 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
         PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
 
+
+
         if(PhraseSetUtil.equals(matchedPhraseSet, phraseSetPositiv)){
-            say(qiContext, "Das freut mich!");
+            say(qiContext, (String) dialogs.get("greetingPositiv")[profile.respect]);
         }else{
-            if(profile.respect.equals("Du")){
-                say(qiContext, "Lass mich deinen Tag besser machen.") ;
-            }else{
-                say(qiContext, "Lassen Sie mich Ihren Tag besser machen.");
-            }
+            say(qiContext, dialogs["greetingNormal"][profile.respect]);
         }
 
 
