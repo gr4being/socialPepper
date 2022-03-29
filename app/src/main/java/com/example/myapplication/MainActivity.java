@@ -23,13 +23,19 @@ import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.builder.AnimateBuilder;
 import com.aldebaran.qi.sdk.builder.AnimationBuilder;
+import com.aldebaran.qi.sdk.builder.ListenBuilder;
+import com.aldebaran.qi.sdk.builder.PhraseSetBuilder;
 import com.aldebaran.qi.sdk.builder.SayBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.actuation.Animation;
+import com.aldebaran.qi.sdk.object.conversation.Listen;
+import com.aldebaran.qi.sdk.object.conversation.ListenResult;
+import com.aldebaran.qi.sdk.object.conversation.PhraseSet;
 import com.aldebaran.qi.sdk.object.conversation.Say;
 import com.aldebaran.qi.sdk.object.locale.Language;
 import com.aldebaran.qi.sdk.object.locale.Locale;
 import com.aldebaran.qi.sdk.object.locale.Region;
+import com.aldebaran.qi.sdk.util.PhraseSetUtil;
 
 import java.util.ArrayList;
 
@@ -47,7 +53,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         setContentView(R.layout.activity_main); //setzt die Anzeigefläche: res->layout->activity_main.xml
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, PackageManager.PERMISSION_GRANTED);
-
     }
 
 
@@ -59,10 +64,20 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     //Das macht der Pepper sobald das Programm startet
     public void onRobotFocusGained(QiContext qiContext) {
 
+        // Build the action.
+        Listen listen = ListenBuilder.with(qiContext)
+                .withPhraseSet(phraseSet)
+                .build();
+
+        // Run the action synchronously.
+        ListenResult listenResult =  listen.run();
+
+        Log.i("TAG", "Heard phrase: " + listenResult.getHeardPhrase().getText());
+
         Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
         // Pepper Sprachausgabe (nur Sprechblase im Simulator)
         Say sayActionFuture = SayBuilder.with(qiContext)
-                .withText("Hallo und Herzlich Willkommen bei BeIng 2022! Wie kann ich Ihnen helfen?")
+                .withText(listenResult.getHeardPhrase().getText())
                 .withLocale(locale)
                 .build();
         sayActionFuture.run();
@@ -84,7 +99,54 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         // The robot focus is refused.
     }
 
+    public void say(QiContext qiContext, String string){
+        Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
 
+        Say sayActionFuture = SayBuilder.with(qiContext)
+                .withText(string)
+                .withLocale(locale)
+                .build();
+        sayActionFuture.run();
+    }
+
+    public void greeting(QiContext qiContext, Profile profile){
+        String greeting;
+        String RobotName = "Alpha";
+        if(profile.respect.equals("Du")){
+            greeting = "Hallo, ich heiße "+ RobotName + ". Wie geht es dir?";
+        }else{
+            greeting = "Hallo, ich heiße "+ RobotName + ". Wie geht es Ihnen?";
+        }
+        say(qiContext, greeting);
+
+        PhraseSet phraseSetPositiv = PhraseSetBuilder.with(qiContext)
+                .withTexts("gut", "schön")
+                .build();
+
+        Listen listen = ListenBuilder.with(qiContext)
+                .withPhraseSet(phraseSetPositiv)
+                .build();
+
+        ListenResult listenResult = listen.run();
+
+        PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
+
+        if(PhraseSetUtil.equals(matchedPhraseSet, phraseSetPositiv)){
+            say(qiContext, "Das freut mich!");
+        }else{
+            if(profile.respect.equals("Du")){
+                say(qiContext, "Lass mich deinen Tag besser machen.") ;
+            }else{
+                say(qiContext, "Lassen Sie mich Ihren Tag besser machen.");
+            }
+        }
+
+
+
+
+
+
+    }
 
     public static double[] faqHandler(String[] keyList, double[] foundKeys, double[][] keyweights){
         double[] understand = new double[keyweights.length];

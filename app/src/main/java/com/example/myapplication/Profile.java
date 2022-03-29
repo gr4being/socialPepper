@@ -10,7 +10,7 @@ public class Profile {
     double distance;
     ArrayList<String> log = new ArrayList<String>(); //
     String emotion;
-    String typ; //Einordnung in verschiedene Menschentypen
+    String respect; //Einordnung in verschiedene Menschentypen "Sie", "Du"
     String faqTopic; //Zu welchem Thema hat der user eine Frage?
     String funTopic;
     String intention; //unterhaltung oder Frage, was kannst du Roboter
