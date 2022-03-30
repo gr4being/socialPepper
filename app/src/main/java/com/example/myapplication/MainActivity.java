@@ -10,6 +10,8 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Switch;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -25,6 +27,7 @@ import java.util.Date;
 
 import androidx.core.app.ActivityCompat;
 
+import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
@@ -50,19 +53,52 @@ import org.json.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends RobotActivity implements RobotLifecycleCallbacks {
 
     private Activity mainActivity;
+    public String[] a_ar = new String[]{};
 
+    private void changeText(String text){
+        TextView textView  = findViewById(R.id.mytextview_id);
+        textView.setText(text);
+    }
 
+    private void say(QiContext qiContext, String text){
+        Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
+        Phrase phrase = new Phrase(text);
+        Future<Say> sayBuilding = SayBuilder.with(qiContext)
+                .withPhrase(phrase)
+                .withLocale(locale)
+                .buildAsync();
+        Future<Void> sayActionFuture = sayBuilding.andThenCompose(say -> say.async().run());
+    }
+
+    public void display(QiContext qiContext,String displayText ){
+        View a = findViewById(R.id.btn_question_1);
+        a.setVisibility(View.INVISIBLE);
+        View b = findViewById(R.id.btn_question_2);
+        b.setVisibility(View.INVISIBLE);
+        View c = findViewById(R.id.btn_question_3);
+        c.setVisibility(View.INVISIBLE);
+        View d = findViewById(R.id.btn_question_4);
+        d.setVisibility(View.INVISIBLE);
+        View e = findViewById(R.id.btn_question_5);
+        e.setVisibility(View.INVISIBLE);
+
+        changeText(displayText);
+    }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         QiSDK.register(this, this);
         mainActivity=this;
+
+        String[] ar = new String[]{"a", "b", "c", "d", "e"};
+        a_ar = new String[]{"no", "yes", "etc", "idgaf", "sure m8"};
 
         setContentView(R.layout.activity_main); //setzt die Anzeigefläche: res->layout->activity_main.xml
 
@@ -123,7 +159,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                             tictacttoe();
                             break;
                         default:
-                            say(qiContext,"es scheint so als wäre ein Problem aufgetreten");
+                            say(qiContext,"es scheinnt so als wäre ein Problem aufgetreten");
                             break;
                     }
                 case "eventwait":
@@ -131,7 +167,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                     eventwait();
                     break;
                 default:
-                    say(qiContext,"es scheint so als wäre ein Problem aufgetreten");
+                    say(qiContext,"es scheinnt so als wäre ein Problem aufgetreten");
                     break;
 
             }
@@ -145,6 +181,54 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             e.printStackTrace();
         }
 
+        Button question_button_1 = (Button) findViewById(R.id.btn_question_1);
+        question_button_1.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                Log.i("aa", "button question 1 clicked");
+                say(qiContext, a_ar[0]);
+                changeText(a_ar[0]);
+            }
+        });
+        Button question_button_2 = (Button) findViewById(R.id.btn_question_2);
+        question_button_2.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                Log.i("aa", "button question 2 clicked");
+                say(qiContext, a_ar[1]);
+                changeText(a_ar[1]);
+            }
+        });
+        Button question_button_3 = (Button) findViewById(R.id.btn_question_3);
+        question_button_3.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                Log.i("aa", "button question 3 clicked");
+                say(qiContext, a_ar[2]);
+                changeText(a_ar[2]);
+            }
+        });
+        Button question_button_4 = (Button) findViewById(R.id.btn_question_4);
+        question_button_4.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                Log.i("aa", "button question 4 clicked");
+                say(qiContext, a_ar[3]);
+                changeText(a_ar[3]);
+            }
+        });
+        Button question_button_5 = (Button) findViewById(R.id.btn_question_5);
+        question_button_5.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                Log.i("aa", "button question 5 clicked");
+                say(qiContext, a_ar[4]);
+                changeText(a_ar[4]);
+            }
+        });
+        
+        // ---------------
+        // chat code
+        // ---------------
+
+        PhraseSet phraseSet = PhraseSetBuilder.with(qiContext)
+                .withTexts("Hello")
+                .build();
 
         // Build the action.
         Listen listen = ListenBuilder.with(qiContext)
@@ -152,17 +236,10 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 .build();
 
         // Run the action synchronously.
-        ListenResult listenResult =  listen.run();
-
-        Log.i("TAG", "Heard phrase: " + listenResult.getHeardPhrase().getText());
-
-        Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
-        // Pepper Sprachausgabe (nur Sprechblase im Simulator)
-        Say sayActionFuture = SayBuilder.with(qiContext)
-                .withText(listenResult.getHeardPhrase().getText())
-                .withLocale(locale)
-                .build();
-        sayActionFuture.run();
+        ListenResult listenResult = listen.run();
+        //((TextView)findViewById(R.id.mytextview_id)).setText(listenResult.getHeardPhrase().getText());
+        changeText(listenResult.getHeardPhrase().getText());
+        Log.i("aa", "Heard phrase: " + listenResult.getHeardPhrase().getText());
 
         //Animationen aus Ressourcen abspielen
         Animation animation = AnimationBuilder.with(qiContext) // Create the builder with the context.
@@ -177,11 +254,11 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         // The robot focus is lost.
     }
 
-    public void onRobotFocusRefused(String reason) {
-        // The robot focus is refused.
+    public void onRobotFocusRefused(String reason){
+            // The robot focus is refused.
     }
 
-    public void say(QiContext qiContext, String string){
+    public void say_old(QiContext qiContext, String string){
         Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
 
         Say sayActionFuture = SayBuilder.with(qiContext)
@@ -265,6 +342,9 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 listen = ListenBuilder.with(qiContext)
                         .withPhraseSets(set1)
                         .build();
+        Listen listen = ListenBuilder.with()
+                .withPhraseSets(forwards, backwards, stop)
+                .build();
 
                 listenResult = listen.run();
                 break;
@@ -347,11 +427,11 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     }
 
-    public static ArrayList<Map<String, Object>> faqHandler(JSONObject parsed, int[] foundKeys){
+    public static ArrayList<Map<String, Object>> faqHandler(JSONObject questionsJSON, int[] foundKeys){
         ArrayList<Map<String, Object>> rated_questions = new ArrayList<Map<String, Object>>();
-        ArrayList<Double> weighted_keysums = new ArrayList<Double>;
-        ArrayList<Double> frequencies = new ArrayList<Double>;
-        /*
+        ArrayList<Double> weighted_keysums = new ArrayList<Double>();
+        ArrayList<Double> frequencies = new ArrayList<Double>();
+
         for(int questionNr = 0; questionNr < keyweights.length; questionNr++){
             double sum = 0;
             for(int keyWord = 0; keyWord < keyList.length; keyWord++){
@@ -361,55 +441,79 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         }
 */
         // calculate weighted_keysums
-        for (Map<String, Object> question : parsed["questions"]) {
-            double sum = 0;
-            for(int keyword : parsed["keywords"]){
-                Int kw_idx = parsed["keywords"].index(keyword);
-                sum += question["keyweights"][kw_idx] * foundKeys[kw_idx];
+        try {
+            JSONArray questions = (JSONArray) questionsJSON.get("questions");
+            JSONArray keywords = (JSONArray) questionsJSON.get("keywords");
+            for (int i = 0; i < questions.length(); i++) {
+                double sum = 0;
+                JSONObject question = (JSONObject) questions.get(i);
+                for (int j = 0; j < keywords.length(); j++) {
+                    JSONArray keyweights = (JSONArray) question.get("keyweights");
+                    sum += keyweights.getInt(j) * foundKeys[j];
+                }
+                weighted_keysums.add(sum);
             }
-            weighted_keysums.add(sum);
-        }
 
-        // calculate frequencies
-        int total_count = 0;
-        for (Map<String, Object> question : parsed["questions"]) {
-            total_count += question["count"];
-        }
-        for (Map<String, Object> question : parsed["questions"]) {
-            double freq;
-            freq = question["count"] / total_count;
-            frequencies.add(freq * parsed["questions"].length); // correction with number of questions
-        }
+            // calculate frequencies
+            int total_count = 0;
+            for (int i = 0; i < questions.length(); i++) {
+                JSONObject question = (JSONObject) questions.get(i);
+                total_count += question.getInt("count");
+            }
+            for (int i = 0; i < questions.length(); i++) {
+                double freq;
+                JSONObject question = (JSONObject) questions.get(i);
+                freq = question.getInt("count") / total_count;
+                frequencies.add(freq * questions.length()); // correction with number of questions
+            }
 
-        rated_questions = rating(parsed["questions"], weighted_keysums, frequencies);
+            rated_questions = rating(questions, weighted_keysums, frequencies);
+
+        } catch (JSONException e) {
+            Log.e("MYAPP", "unexpected JSON exception", e);
+        }
 
         return rated_questions;
     }
 
-    public static ArrayList<Map<String, Object>> rating(JSONObject questions, ArrayList<Double> weighted_keysums, ArrayList<Double> frequencies) {
+    public static ArrayList<Map<String, Object>> rating(JSONArray questions, ArrayList<Double> weighted_keysums, ArrayList<Double> frequencies) {
         // double freqParameter = 0.5;
-        ArrayList<Map<String, Object>> rated_questions;
-        /*double[] rating = new double[understand.length];
-        for (int i = 0; i < understand.length; i++) {
-            rating[i] = understand[i] + freqParameter * frequency[i];
-        }*/
+        ArrayList<Map<String, Object>> rated_questions = null;
 
-        for (int i = 0; i < questions.length(); i++) {
-            double rating = weighted_keysums[i] + frequencies[i];
-            rated_questions.add(Map.of("question", questions[i]["question"], "answer", questions[i]["answer"], "rating", rating);
+        try {
+            for (int i = 0; i < questions.length(); i++) {
+                double rating = weighted_keysums.get(i) + frequencies.get(i);
+                HashMap<String, Object> rated_question = new HashMap();
+                JSONObject question = (JSONObject) questions.get(i);
+                rated_question.put("question", question.getString("question"));
+                rated_question.put("answer", question.getString("answer"));
+                rated_question.put("rating", rating);
+                rated_questions.add(rated_question);
+            }
+
+        } catch (JSONException e) {
+            Log.e("MYAPP", "unexpected JSON exception", e);
+        }
+
+        // sort rated_questions
+        for (int i = 0; i < rated_questions.size(); i++) {
+            // Inner nested loop pointing 1 index ahead
+            for (int j = i + 1; j < rated_questions.size(); j++) {
+                // Checking elements
+                HashMap<String, Object> temp = new HashMap<String, Object>();
+                HashMap<String, Object> first_q = (HashMap<String, Object>) rated_questions.get(j);
+                int first_r = (Integer) first_q.get("rating");
+                HashMap<String, Object> second_q = (HashMap<String, Object>) rated_questions.get(i);
+                int second_r = (Integer) second_q.get("rating");
+                if (first_r < second_r) {
+                    // Swapping
+                    temp = (HashMap<String, Object>) rated_questions.get(i);
+                    rated_questions.set(i, rated_questions.get(j));
+                    rated_questions.set(j, temp);
+                }
+            }
         }
         return rated_questions;
-    }
-
-    public static int[] sortedIndices(double[] originalArray)
-    {
-        int len = originalArray.length;
-        double[] sortedCopy = originalArray.clone();
-        int[] indices = new int[len];
-        Arrays.sort(sortedCopy);
-        for (int index = 0; index < len; index++)
-            indices[index] = Arrays.binarySearch(sortedCopy, originalArray[index]);
-        return indices;
     }
 }
 
