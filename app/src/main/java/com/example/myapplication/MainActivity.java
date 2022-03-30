@@ -181,7 +181,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
         }
 
-
         Button question_button_1 = (Button) findViewById(R.id.btn_question_1);
         question_button_1.setOnClickListener(new View.OnClickListener() {
             public void onClick (View view) {
@@ -222,7 +221,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 changeText(a_ar[4]);
             }
         });
-
+        
         // ---------------
         // chat code
         // ---------------
