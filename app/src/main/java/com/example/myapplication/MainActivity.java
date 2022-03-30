@@ -10,6 +10,8 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+
+import org.json.JSONException;
 import org.json.simple.parser.JSONParser;
 
 
@@ -73,11 +75,22 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     public void onRobotFocusGained(QiContext qiContext) {
         // get dialogs from file
         JSONParser parser = new JSONParser();
+        String next = "start";
         try {
             JSONObject dialogsObj = (JSONObject) parser.parse(new FileReader("./dialogs.json"));
+            JSONArray start = (JSONArray) dialogsObj.get(next);
+            JSONObject typeobj = (JSONObject) start.get(1);
+            String type = (String) typeobj.get("type");
+            switch(type){
+                case "talk":String text = talk();
+            }
+
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -151,6 +164,8 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         }else{
             say(qiContext, dialogs["greetingNormal"][profile.respect]);
         }
+
+        public String talk()
 
 
 
