@@ -19,6 +19,7 @@ import org.json.simple.parser.JSONParser;
 
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Array;
 import java.util.ArrayList;
@@ -284,15 +285,73 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         changeText(displayText);
     }
 
+    public void update_keyweights(QiContext qiContext, String question_text, double[] heard_keys, Boolean correct) {
+        double learning_rate = 0.1;
+
+        JSONParser parser = new JSONParser();
+        JSONObject questionsObj = (JSONObject) parser.parse(new FileReader("./questions.json"));
+        JSONArray questionsArr = (JSONArray) questionsObj.get("questions");
+
+        JSONObject newquestionsObj = new JSONObject();
+        JSONArray newquestionsArr = new JSONArray();
+
+        newquestionsObj.put("keywords", questionsObj.get("keywords"));
+
+
+        for (int i=0; i<questionsArr.length(); i++) {
+            JSONObject question = (JSONObject) questionsArr.get(i);
+            if (question.getString("question") == question_text) {
+
+                JSONArray keyweights = question.getJSONArray("keyweights");
+                JSONArray newkeyweights = new JSONArray();
+
+                int count
+                for (int j=0; j<keyweights.length(); j++) {
+
+                }
+
+                for (int j=0; j<keyweights.length(); j++) {
+                    if (heard_keys[j]==1) {
+
+                    }
+                }
+
+
+
+                JSONObject newquestion = new JSONObject();
+
+                newquestion.put("question", question.getString("question"));
+                newquestion.put("answer", question.getString("answer"));
+                newquestion.put("count", question.getInt("count"));
+                newquestion.put("keyweights", newkeyweights);
+
+                newquestionsArr.put(newquestion);
+            } else {
+                newquestionsArr.put(question);
+            }
+        }
+
+        newquestionsObj.put("questions", newquestionsArr);
+
+        try {
+            FileWriter file; // public static
+            file = new FileWriter("./questions.json");
+            file.write(newquestionsObj.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public int question(QiContext qiContext,String text,JSONArray answers ) {
         JSONArray answer;
         Listen listen;
-        ListenResult listenResult;
+        ListenResult listenResult = null;
         int answersetnum = 0;
-        PhraseSet set1;
-        PhraseSet set2;
-        PhraseSet set3;
-        PhraseSet set4;
+        PhraseSet set1 = null;
+        PhraseSet set2 = null;
+        PhraseSet set3 = null;
+        PhraseSet set4 = null;
         int listlength = answers.length();
         String[] words = {};
         if (listlength > 0) {
@@ -359,9 +418,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 listen = ListenBuilder.with(qiContext)
                         .withPhraseSets(set1)
                         .build();
-                Listen listen = ListenBuilder.with(qiContext)
-                        .withPhraseSets(forwards, backwards, stop)
-                        .build();
 
                 listenResult = listen.run();
                 break;
@@ -386,8 +442,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
                 listenResult = listen.run();
                 break;
-            default:
-                say_sync(qiContext, "hmmmmmmm");
         }
         Phrase heardPhrase = listenResult.getHeardPhrase();
         PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
