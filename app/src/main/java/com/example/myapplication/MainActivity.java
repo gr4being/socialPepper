@@ -10,6 +10,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -58,13 +59,16 @@ import java.util.Map;
 public class MainActivity extends RobotActivity implements RobotLifecycleCallbacks {
 
     private Activity mainActivity;
-
+    public String[] a_ar = new String[]{};
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         QiSDK.register(this, this);
         mainActivity=this;
+
+        String[] ar = new String[]{"a", "b", "c", "d", "e"};
+        a_ar = new String[]{"no", "yes", "etc", "idgaf", "sure m8"};
 
         setContentView(R.layout.activity_main); //setzt die Anzeigefläche: res->layout->activity_main.xml
 
@@ -146,6 +150,47 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        Button question_button_1 = (Button) findViewById(R.id.btn_question_1);
+        question_button_1.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                Log.i("aa", "button question 1 clicked");
+                say(qiContext, a_ar[0]);
+                changeText(a_ar[0]);
+            }
+        });
+        Button question_button_2 = (Button) findViewById(R.id.btn_question_2);
+        question_button_2.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                Log.i("aa", "button question 2 clicked");
+                say(qiContext, a_ar[1]);
+                changeText(a_ar[1]);
+            }
+        });
+        Button question_button_3 = (Button) findViewById(R.id.btn_question_3);
+        question_button_3.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                Log.i("aa", "button question 3 clicked");
+                say(qiContext, a_ar[2]);
+                changeText(a_ar[2]);
+            }
+        });
+        Button question_button_4 = (Button) findViewById(R.id.btn_question_4);
+        question_button_4.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                Log.i("aa", "button question 4 clicked");
+                say(qiContext, a_ar[3]);
+                changeText(a_ar[3]);
+            }
+        });
+        Button question_button_5 = (Button) findViewById(R.id.btn_question_5);
+        question_button_5.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                Log.i("aa", "button question 5 clicked");
+                say(qiContext, a_ar[4]);
+                changeText(a_ar[4]);
+            }
+        });
 
 
         // Build the action.
