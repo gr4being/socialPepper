@@ -205,10 +205,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 frequencies.add(freq * questions.length()); // correction with number of questions
             }
 
-            double[] weighted_keysums_darr = (double[]) weighted_keysums;
-            double[] frequencies_darr = (double[]) frequencies;
-
-            rated_questions = rating(questions, weighted_keysums_darr, frequencies_darr);
+            rated_questions = rating(questions, weighted_keysums, frequencies);
 
         } catch (JSONException e) {
             Log.e("MYAPP", "unexpected JSON exception", e);
@@ -217,13 +214,13 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         return rated_questions;
     }
 
-    public static ArrayList<Map<String, Object>> rating(JSONArray questions, double[] weighted_keysums, double[] frequencies) {
+    public static ArrayList<Map<String, Object>> rating(JSONArray questions, ArrayList<Double> weighted_keysums, ArrayList<Double> frequencies) {
         // double freqParameter = 0.5;
         ArrayList<Map<String, Object>> rated_questions = null;
 
         try {
             for (int i = 0; i < questions.length(); i++) {
-                double rating = weighted_keysums[i] + frequencies[i];
+                double rating = weighted_keysums.get(i) + frequencies.get(i);
                 HashMap<String, Object> rated_question = new HashMap();
                 JSONObject question = (JSONObject) questions.get(i);
                 rated_question.put("question", question.getString("question"));
