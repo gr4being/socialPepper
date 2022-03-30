@@ -131,13 +131,18 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         .withHuman(human)
                         .build();
                 engageHuman.async().run();
-                conversation();
+                engageHuman.addOnHumanIsDisengagingListener(() -> {
+                    say(qiContext, "Tschüss!");
+                    //engagement.requestCancellation();
+                });
+                Profile profile = new Profile();
+                profile.age = human.getEstimatedAge().getYears();
+                conversation(profile);
             }
         });
     }
 
-    public void conversation () {
-        Profile profile = new Profile();
+    public void conversation (Profile profile) {
         // get dialogs from file
         JSONParser parser = new JSONParser();
         String next = "start";
@@ -391,7 +396,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 listen = ListenBuilder.with(qiContext)
                         .withPhraseSets(set1)
                         .build();
-        Listen listen = ListenBuilder.with()
+        Listen listen = ListenBuilder.with(qiContext)
                 .withPhraseSets(forwards, backwards, stop)
                 .build();
 
