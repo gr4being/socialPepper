@@ -286,7 +286,13 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     }
 
     public void update_keyweights(QiContext qiContext, String question_text, double[] heard_keys, Boolean correct) {
-        double learning_rate = 0.1;
+        double learning_rate = 0.4;
+        int sign = 0;
+        if (correct) {
+            sign = 1;
+        } else {
+            sign = -1;
+        }
 
         JSONParser parser = new JSONParser();
         JSONObject questionsObj = (JSONObject) parser.parse(new FileReader("./questions.json"));
@@ -305,18 +311,26 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 JSONArray keyweights = question.getJSONArray("keyweights");
                 JSONArray newkeyweights = new JSONArray();
 
-                int count
-                for (int j=0; j<keyweights.length(); j++) {
-
-                }
+                int sum_keyprobs_over05 = 0;
+                int sum_keyprobs_under05 = 0;
 
                 for (int j=0; j<keyweights.length(); j++) {
-                    if (heard_keys[j]==1) {
-
+                    if (heard_keys[j] > 0.5) {
+                        sum_keyprobs_over05 += heard_keys[j];
+                    } else {
+                        sum_keyprobs_under05 -= heard_keys[j]-1;
                     }
                 }
 
 
+                for (int j=0; j<keyweights.length(); j++) {
+
+                    if (heard_keys[j] > 0.5) {
+                        newkeyweights.put(j, keyweights.getDouble(j) + sign * (heard_keys[j]/sum_keyprobs_over05) * learning_rate );
+                    } else {
+                        newkeyweights.put(j, keyweights.getDouble(j) + sign * -1 * (heard_keys[j]/sum_keyprobs_under05) * learning_rate );
+                    }
+                }
 
                 JSONObject newquestion = new JSONObject();
 
