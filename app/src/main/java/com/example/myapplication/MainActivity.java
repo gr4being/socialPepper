@@ -80,6 +80,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         String next = "start";
         String text;
         String event;
+        JSONArray answers;
         JSONArray animationfiles;
         JSONObject texts;
         JSONObject displaytexts;
@@ -98,7 +99,8 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 case "question":
                     texts = (JSONObject) actionObj.get("texts");
                     text = (String) texts.get(profile.formality());
-                    question(qiContext,text);
+                    answers = (JSONArray) actionObj.get("answers");
+                    question(qiContext,text,answers);
                     break;
                 case "animation":
                     animationfiles = (JSONArray) actionObj.get("filename");
@@ -186,7 +188,36 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 .build();
         sayActionFuture.run();
     }
-    public int question(QiContext qiContext,String text ){
+    public int question(QiContext qiContext,String text,JSONArray answers ){
+        int listlength = answers.length();
+        if(listlength>0){
+            PhraseSet set1 = PhraseSetBuilder.with(qiContext)
+                    .withTexts()
+                    .build();
+            if(listlength>1){
+                PhraseSet set2 = PhraseSetBuilder.with(qiContext)
+                        .withTexts("Hello", "Hi")
+                        .build();
+                if(listlength>2){
+                    PhraseSet set3 = PhraseSetBuilder.with(qiContext)
+                            .withTexts("Hello", "Hi")
+                            .build();
+                    if(listlength>3){
+                        PhraseSet set4 = PhraseSetBuilder.with(qiContext)
+                                .withTexts("Hello", "Hi")
+                                .build();
+                    }
+                }
+            }
+        }
+
+
+
+        Listen listen = ListenBuilder.with()
+                .withPhraseSets(forwards, backwards, stop)
+                .build();
+
+        ListenResult listenResult = listen.run();
 
     }
 
