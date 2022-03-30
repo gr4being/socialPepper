@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -36,6 +37,7 @@ import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.actuation.Animation;
 import com.aldebaran.qi.sdk.object.conversation.Listen;
 import com.aldebaran.qi.sdk.object.conversation.ListenResult;
+import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.PhraseSet;
 import com.aldebaran.qi.sdk.object.conversation.Say;
 import com.aldebaran.qi.sdk.object.locale.Language;
@@ -121,7 +123,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                             tictacttoe();
                             break;
                         default:
-                            say(qiContext,"es scheinnt so als wäre ein Problem aufgetreten");
+                            say(qiContext,"es scheint so als wäre ein Problem aufgetreten");
                             break;
                     }
                 case "eventwait":
@@ -129,7 +131,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                     eventwait();
                     break;
                 default:
-                    say(qiContext,"es scheinnt so als wäre ein Problem aufgetreten");
+                    say(qiContext,"es scheint so als wäre ein Problem aufgetreten");
                     break;
 
             }
@@ -188,36 +190,123 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 .build();
         sayActionFuture.run();
     }
-    public int question(QiContext qiContext,String text,JSONArray answers ){
+    public int question(QiContext qiContext,String text,JSONArray answers ) {
+        JSONArray answer;
+        Listen listen;
+        ListenResult listenResult;
+        int answersetnum = 0;
+        PhraseSet set1;
+        PhraseSet set2;
+        PhraseSet set3;
+        PhraseSet set4;
         int listlength = answers.length();
-        if(listlength>0){
-            PhraseSet set1 = PhraseSetBuilder.with(qiContext)
-                    .withTexts()
+        String[] words = {};
+        if (listlength > 0) {
+            try {
+                answer = (JSONArray) answers.get(0);
+                for (int i = 0; i < answer.length(); i++) {
+                    words[i] = (String) answer.get(i);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            set1 = PhraseSetBuilder.with(qiContext)
+                    .withTexts(words)
                     .build();
-            if(listlength>1){
-                PhraseSet set2 = PhraseSetBuilder.with(qiContext)
-                        .withTexts("Hello", "Hi")
+            Arrays.fill(words, null);
+            if (listlength > 1) {
+                try {
+                    answer = (JSONArray) answers.get(1);
+                    for (int i = 0; i < answer.length(); i++) {
+                        words[i] = (String) answer.get(i);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                set2 = PhraseSetBuilder.with(qiContext)
+                        .withTexts(words)
                         .build();
-                if(listlength>2){
-                    PhraseSet set3 = PhraseSetBuilder.with(qiContext)
-                            .withTexts("Hello", "Hi")
+                Arrays.fill(words, null);
+                if (listlength > 2) {
+                    try {
+                        answer = (JSONArray) answers.get(2);
+                        for (int i = 0; i < answer.length(); i++) {
+                            words[i] = (String) answer.get(i);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    set3 = PhraseSetBuilder.with(qiContext)
+                            .withTexts(words)
                             .build();
-                    if(listlength>3){
-                        PhraseSet set4 = PhraseSetBuilder.with(qiContext)
-                                .withTexts("Hello", "Hi")
+                    Arrays.fill(words, null);
+                    if (listlength == 4) {
+                        try {
+                            answer = (JSONArray) answers.get(3);
+                            for (int i = 0; i < answer.length(); i++) {
+                                words[i] = (String) answer.get(i);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        set4 = PhraseSetBuilder.with(qiContext)
+                                .withTexts(words)
                                 .build();
+                        Arrays.fill(words, null);
+                    } else {
+                        say(qiContext, "es scheint so als wäre ein Problem aufgetreten");
                     }
                 }
             }
         }
 
+        switch (listlength){
+            case 1:
+                listen = ListenBuilder.with(qiContext)
+                        .withPhraseSets(set1)
+                        .build();
 
+                listenResult = listen.run();
+                break;
+            case 2:
+                listen = ListenBuilder.with(qiContext)
+                        .withPhraseSets(set1,set2)
+                        .build();
 
-        Listen listen = ListenBuilder.with()
-                .withPhraseSets(forwards, backwards, stop)
-                .build();
+                listenResult = listen.run();
+                break;
+            case 3:
+                listen = ListenBuilder.with(qiContext)
+                        .withPhraseSets(set1,set2,set3)
+                        .build();
 
-        ListenResult listenResult = listen.run();
+                listenResult = listen.run();
+                break;
+            case 4:
+                listen = ListenBuilder.with(qiContext)
+                        .withPhraseSets(set1,set2,set3,set4)
+                        .build();
+
+                listenResult = listen.run();
+                break;
+            default:
+                say(qiContext,"hmmmmmmm");
+        }
+        Phrase heardPhrase = listenResult.getHeardPhrase();
+        PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
+        if(matchedPhraseSet==set1){
+            answersetnum = 0;
+        }
+        if(matchedPhraseSet==set2){
+            answersetnum = 1;
+        }
+        if(matchedPhraseSet==set3){
+            answersetnum = 2;
+        }
+        if(matchedPhraseSet==set4){
+            answersetnum = 3;
+        }
+        return answersetnum;
 
     }
 
