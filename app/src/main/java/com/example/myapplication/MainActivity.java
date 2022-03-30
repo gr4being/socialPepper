@@ -10,6 +10,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -58,13 +59,45 @@ import java.util.Map;
 public class MainActivity extends RobotActivity implements RobotLifecycleCallbacks {
 
     private Activity mainActivity;
+    public String[] a_ar = new String[]{};
 
+    private void changeText(String text){
+        TextView textView  = findViewById(R.id.mytextview_id);
+        textView.setText(text);
+    }
 
+    private void say(QiContext qiContext, String text){
+        Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
+        Phrase phrase = new Phrase(text);
+        Future<Say> sayBuilding = SayBuilder.with(qiContext)
+                .withPhrase(phrase)
+                .withLocale(locale)
+                .buildAsync();
+        Future<Void> sayActionFuture = sayBuilding.andThenCompose(say -> say.async().run());
+    }
+
+    public void display(QiContext qiContext,String displayText ){
+        View a = findViewById(R.id.btn_question_1);
+        a.setVisibility(View.INVISIBLE);
+        View b = findViewById(R.id.btn_question_2);
+        b.setVisibility(View.INVISIBLE);
+        View c = findViewById(R.id.btn_question_3);
+        c.setVisibility(View.INVISIBLE);
+        View d = findViewById(R.id.btn_question_4);
+        d.setVisibility(View.INVISIBLE);
+        View e = findViewById(R.id.btn_question_5);
+        e.setVisibility(View.INVISIBLE);
+
+        changeText(displayText);
+    }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         QiSDK.register(this, this);
         mainActivity=this;
+
+        String[] ar = new String[]{"a", "b", "c", "d", "e"};
+        a_ar = new String[]{"no", "yes", "etc", "idgaf", "sure m8"};
 
         setContentView(R.layout.activity_main); //setzt die Anzeigefläche: res->layout->activity_main.xml
 
@@ -145,8 +178,58 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
+
         }
 
+
+        Button question_button_1 = (Button) findViewById(R.id.btn_question_1);
+        question_button_1.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                Log.i("aa", "button question 1 clicked");
+                say(qiContext, a_ar[0]);
+                changeText(a_ar[0]);
+            }
+        });
+        Button question_button_2 = (Button) findViewById(R.id.btn_question_2);
+        question_button_2.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                Log.i("aa", "button question 2 clicked");
+                say(qiContext, a_ar[1]);
+                changeText(a_ar[1]);
+            }
+        });
+        Button question_button_3 = (Button) findViewById(R.id.btn_question_3);
+        question_button_3.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                Log.i("aa", "button question 3 clicked");
+                say(qiContext, a_ar[2]);
+                changeText(a_ar[2]);
+            }
+        });
+        Button question_button_4 = (Button) findViewById(R.id.btn_question_4);
+        question_button_4.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                Log.i("aa", "button question 4 clicked");
+                say(qiContext, a_ar[3]);
+                changeText(a_ar[3]);
+            }
+        });
+        Button question_button_5 = (Button) findViewById(R.id.btn_question_5);
+        question_button_5.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                Log.i("aa", "button question 5 clicked");
+                say(qiContext, a_ar[4]);
+                changeText(a_ar[4]);
+            }
+        });
+
+        // ---------------
+        // chat code
+        // ---------------
+
+        PhraseSet phraseSet = PhraseSetBuilder.with(qiContext)
+                .withTexts("Hello")
+                .build();
 
         // Build the action.
         Listen listen = ListenBuilder.with(qiContext)
@@ -154,17 +237,10 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 .build();
 
         // Run the action synchronously.
-        ListenResult listenResult =  listen.run();
-
-        Log.i("TAG", "Heard phrase: " + listenResult.getHeardPhrase().getText());
-
-        Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
-        // Pepper Sprachausgabe (nur Sprechblase im Simulator)
-        Say sayActionFuture = SayBuilder.with(qiContext)
-                .withText(listenResult.getHeardPhrase().getText())
-                .withLocale(locale)
-                .build();
-        sayActionFuture.run();
+        ListenResult listenResult = listen.run();
+        //((TextView)findViewById(R.id.mytextview_id)).setText(listenResult.getHeardPhrase().getText());
+        changeText(listenResult.getHeardPhrase().getText());
+        Log.i("aa", "Heard phrase: " + listenResult.getHeardPhrase().getText());
 
         //Animationen aus Ressourcen abspielen
         Animation animation = AnimationBuilder.with(qiContext) // Create the builder with the context.
@@ -179,21 +255,11 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         // The robot focus is lost.
     }
 
-    public void onRobotFocusRefused(String reason) {
-        // The robot focus is refused.
+    public void onRobotFocusRefused(String reason){
+            // The robot focus is refused.
     }
 
-    private void say(QiContext qiContext, String text){
-        Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
-        Phrase phrase = new Phrase(text);
-        Future<Say> sayBuilding = SayBuilder.with(qiContext)
-                .withPhrase(phrase)
-                .withLocale(locale)
-                .buildAsync();
-        Future<Void> sayActionFuture = sayBuilding.andThenCompose(say -> say.async().run());
-    }
-
-    /*public void say_old(QiContext qiContext, String string){
+    public void say_old(QiContext qiContext, String string){
         Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
 
         Say sayActionFuture = SayBuilder.with(qiContext)
@@ -201,7 +267,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 .withLocale(locale)
                 .build();
         sayActionFuture.run();
-    }*/
+    }
 
     public int question(QiContext qiContext,String text,JSONArray answers ){
         int listlength = answers.length();
@@ -226,8 +292,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             }
         }
 
-
-
         Listen listen = ListenBuilder.with()
                 .withPhraseSets(forwards, backwards, stop)
                 .build();
@@ -236,25 +300,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     }
 
-    private void changeText(String text){
-        TextView textView  = findViewById(R.id.mytextview_id);
-        textView.setText(text);
-    }
 
-    public void display(QiContext qiContext,String displayText ){
-        View a = findViewById(R.id.btn_question_1);
-        a.setVisibility(View.INVISIBLE);
-        View b = findViewById(R.id.btn_question_2);
-        b.setVisibility(View.INVISIBLE);
-        View c = findViewById(R.id.btn_question_3);
-        c.setVisibility(View.INVISIBLE);
-        View d = findViewById(R.id.btn_question_4);
-        d.setVisibility(View.INVISIBLE);
-        View e = findViewById(R.id.btn_question_5);
-        e.setVisibility(View.INVISIBLE);
-
-        changeText(displayText);
-    }
 
     public void greeting(QiContext qiContext, Profile profile,  JSONObject dialogs){
 
@@ -281,18 +327,13 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             say(qiContext, dialogs["greetingNormal"][profile.respect]);
         }
 
-
-
-
-
-
     }
 
     public static ArrayList<Map<String, Object>> faqHandler(JSONObject questionsJSON, int[] foundKeys){
         ArrayList<Map<String, Object>> rated_questions = new ArrayList<Map<String, Object>>();
         ArrayList<Double> weighted_keysums = new ArrayList<Double>();
         ArrayList<Double> frequencies = new ArrayList<Double>();
-        /*
+
         for(int questionNr = 0; questionNr < keyweights.length; questionNr++){
             double sum = 0;
             for(int keyWord = 0; keyWord < keyList.length; keyWord++){
