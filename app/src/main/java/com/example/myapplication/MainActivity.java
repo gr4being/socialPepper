@@ -10,8 +10,6 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
-
-import org.json.JSONException;
 import org.json.simple.parser.JSONParser;
 
 
@@ -48,7 +46,6 @@ import org.json.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -78,12 +75,69 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     public void onRobotFocusGained(QiContext qiContext) {
         // get dialogs from file
         JSONParser parser = new JSONParser();
+        String next = "start";
+        String text;
+        String event;
+        JSONArray answers;
+        JSONArray animationfiles;
+        JSONObject texts;
+        JSONObject displaytexts;
+        String displaytext;
+        String action;
         try {
-            Object dialogsObj = parser.parse(new FileReader("./dialogs.json"));
-            JSONObject dialogsJSON = (JSONObject) dialogsObj;
+            JSONObject dialogsObj = (JSONObject) parser.parse(new FileReader("./dialogs.json"));
+            JSONObject actionObj = (JSONObject) dialogsObj.get(next);
+            String type = (String) actionObj.get("type");
+            switch(type){
+                case "talk":
+                    texts = (JSONObject) actionObj.get("texts");
+                    text = (String) texts.get(profile.formality());
+                    say(qiContext,text);
+                    break;
+                case "question":
+                    texts = (JSONObject) actionObj.get("texts");
+                    text = (String) texts.get(profile.formality());
+                    answers = (JSONArray) actionObj.get("answers");
+                    question(qiContext,text,answers);
+                    break;
+                case "animation":
+                    animationfiles = (JSONArray) actionObj.get("filename");
+                    animation(qiContext,animationfiles);
+                    break;
+                case "display":
+                    displaytexts = (JSONObject) actionObj.get("texts");
+                    displaytext = (String) displaytexts.get(profile.formality());
+                    display(qiContext,displaytext);
+                    break;
+                case "action":
+                    action = (String) actionObj.get("action");
+                    switch(action){
+                        case "faq":
+                            faq();
+                            break;
+                        case "tictactoe":
+                            tictacttoe();
+                            break;
+                        default:
+                            say(qiContext,"es scheinnt so als wäre ein Problem aufgetreten");
+                            break;
+                    }
+                case "eventwait":
+                    event = (String) actionObj.get("event");
+                    eventwait();
+                    break;
+                default:
+                    say(qiContext,"es scheinnt so als wäre ein Problem aufgetreten");
+                    break;
+
+            }
+
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -132,6 +186,42 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 .build();
         sayActionFuture.run();
     }
+    public int question(QiContext qiContext,String text,JSONArray answers ){
+        int listlength = answers.length();
+        if(listlength>0){
+            PhraseSet set1 = PhraseSetBuilder.with(qiContext)
+                    .withTexts()
+                    .build();
+            if(listlength>1){
+                PhraseSet set2 = PhraseSetBuilder.with(qiContext)
+                        .withTexts("Hello", "Hi")
+                        .build();
+                if(listlength>2){
+                    PhraseSet set3 = PhraseSetBuilder.with(qiContext)
+                            .withTexts("Hello", "Hi")
+                            .build();
+                    if(listlength>3){
+                        PhraseSet set4 = PhraseSetBuilder.with(qiContext)
+                                .withTexts("Hello", "Hi")
+                                .build();
+                    }
+                }
+            }
+        }
+
+
+
+        Listen listen = ListenBuilder.with()
+                .withPhraseSets(forwards, backwards, stop)
+                .build();
+
+        ListenResult listenResult = listen.run();
+
+    }
+
+    public void display(QiContext qiContext,String displaytext ){
+
+    }
 
     public void greeting(QiContext qiContext, Profile profile,  JSONObject dialogs){
 
@@ -165,10 +255,10 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     }
 
-    public static ArrayList<Map<String, Object>> faqHandler(JSONObject questionsJSON, int[] foundKeys){
+    public static ArrayList<Map<String, Object>> faqHandler(JSONObject parsed, int[] foundKeys){
         ArrayList<Map<String, Object>> rated_questions = new ArrayList<Map<String, Object>>();
-        ArrayList<Double> weighted_keysums = new ArrayList<Double>();
-        ArrayList<Double> frequencies = new ArrayList<Double>();
+        ArrayList<Double> weighted_keysums = new ArrayList<Double>;
+        ArrayList<Double> frequencies = new ArrayList<Double>;
         /*
         for(int questionNr = 0; questionNr < keyweights.length; questionNr++){
             double sum = 0;
@@ -179,79 +269,55 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         }
 */
         // calculate weighted_keysums
-        try {
-            JSONArray questions = (JSONArray) questionsJSON.get("questions");
-            JSONArray keywords = (JSONArray) questionsJSON.get("keywords");
-            for (int i = 0; i < questions.length(); i++) {
-                double sum = 0;
-                JSONObject question = (JSONObject) questions.get(i);
-                for (int j = 0; j < keywords.length(); j++) {
-                    JSONArray keyweights = (JSONArray) question.get("keyweights");
-                    sum += keyweights.getInt(j) * foundKeys[j];
-                }
-                weighted_keysums.add(sum);
+        for (Map<String, Object> question : parsed["questions"]) {
+            double sum = 0;
+            for(int keyword : parsed["keywords"]){
+                Int kw_idx = parsed["keywords"].index(keyword);
+                sum += question["keyweights"][kw_idx] * foundKeys[kw_idx];
             }
-
-            // calculate frequencies
-            int total_count = 0;
-            for (int i = 0; i < questions.length(); i++) {
-                JSONObject question = (JSONObject) questions.get(i);
-                total_count += question.getInt("count");
-            }
-            for (int i = 0; i < questions.length(); i++) {
-                double freq;
-                JSONObject question = (JSONObject) questions.get(i);
-                freq = question.getInt("count") / total_count;
-                frequencies.add(freq * questions.length()); // correction with number of questions
-            }
-
-            rated_questions = rating(questions, weighted_keysums, frequencies);
-
-        } catch (JSONException e) {
-            Log.e("MYAPP", "unexpected JSON exception", e);
+            weighted_keysums.add(sum);
         }
+
+        // calculate frequencies
+        int total_count = 0;
+        for (Map<String, Object> question : parsed["questions"]) {
+            total_count += question["count"];
+        }
+        for (Map<String, Object> question : parsed["questions"]) {
+            double freq;
+            freq = question["count"] / total_count;
+            frequencies.add(freq * parsed["questions"].length); // correction with number of questions
+        }
+
+        rated_questions = rating(parsed["questions"], weighted_keysums, frequencies);
 
         return rated_questions;
     }
 
-    public static ArrayList<Map<String, Object>> rating(JSONArray questions, ArrayList<Double> weighted_keysums, ArrayList<Double> frequencies) {
+    public static ArrayList<Map<String, Object>> rating(JSONObject questions, ArrayList<Double> weighted_keysums, ArrayList<Double> frequencies) {
         // double freqParameter = 0.5;
-        ArrayList<Map<String, Object>> rated_questions = null;
+        ArrayList<Map<String, Object>> rated_questions;
+        /*double[] rating = new double[understand.length];
+        for (int i = 0; i < understand.length; i++) {
+            rating[i] = understand[i] + freqParameter * frequency[i];
+        }*/
 
-        try {
-            for (int i = 0; i < questions.length(); i++) {
-                double rating = weighted_keysums.get(i) + frequencies.get(i);
-                HashMap<String, Object> rated_question = new HashMap();
-                JSONObject question = (JSONObject) questions.get(i);
-                rated_question.put("question", question.getString("question"));
-                rated_question.put("answer", question.getString("answer"));
-                rated_question.put("rating", rating);
-                rated_questions.add(rated_question);
-            }
-
-        } catch (JSONException e) {
-            Log.e("MYAPP", "unexpected JSON exception", e);
-        }
-
-        // sort rated_questions
-        for (int i = 0; i < rated_questions.size(); i++) {
-            // Inner nested loop pointing 1 index ahead
-            for (int j = i + 1; j < rated_questions.size(); j++) {
-                // Checking elements
-                HashMap<String, Object> temp = new HashMap<String, Object>();
-                HashMap<String, Object> first_q = (HashMap<String, Object>) rated_questions.get(j);
-                int first_r = (Integer) first_q.get("rating");
-                HashMap<String, Object> second_q = (HashMap<String, Object>) rated_questions.get(i);
-                int second_r = (Integer) second_q.get("rating");
-                if (first_r < second_r) {
-                    // Swapping
-                    temp = (HashMap<String, Object>) rated_questions.get(i);
-                    rated_questions.set(i, rated_questions.get(j));
-                    rated_questions.set(j, temp);
-                }
-            }
+        for (int i = 0; i < questions.length(); i++) {
+            double rating = weighted_keysums[i] + frequencies[i];
+            rated_questions.add(Map.of("question", questions[i]["question"], "answer", questions[i]["answer"], "rating", rating);
         }
         return rated_questions;
+    }
+
+    public static int[] sortedIndices(double[] originalArray)
+    {
+        int len = originalArray.length;
+        double[] sortedCopy = originalArray.clone();
+        int[] indices = new int[len];
+        Arrays.sort(sortedCopy);
+        for (int index = 0; index < len; index++)
+            indices[index] = Arrays.binarySearch(sortedCopy, originalArray[index]);
+        return indices;
     }
 }
 
