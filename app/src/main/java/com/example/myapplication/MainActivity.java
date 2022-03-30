@@ -68,35 +68,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     private Activity mainActivity;
     public String[] a_ar = new String[]{};
 
-    private void changeText(String text){
-        TextView textView  = findViewById(R.id.mytextview_id);
-        textView.setText(text);
-    }
 
-    private void say(QiContext qiContext, String text){
-        Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
-        Phrase phrase = new Phrase(text);
-        Future<Say> sayBuilding = SayBuilder.with(qiContext)
-                .withPhrase(phrase)
-                .withLocale(locale)
-                .buildAsync();
-        Future<Void> sayActionFuture = sayBuilding.andThenCompose(say -> say.async().run());
-    }
-
-    public void display(QiContext qiContext,String displayText ){
-        View a = findViewById(R.id.btn_question_1);
-        a.setVisibility(View.INVISIBLE);
-        View b = findViewById(R.id.btn_question_2);
-        b.setVisibility(View.INVISIBLE);
-        View c = findViewById(R.id.btn_question_3);
-        c.setVisibility(View.INVISIBLE);
-        View d = findViewById(R.id.btn_question_4);
-        d.setVisibility(View.INVISIBLE);
-        View e = findViewById(R.id.btn_question_5);
-        e.setVisibility(View.INVISIBLE);
-
-        changeText(displayText);
-    }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,17 +104,17 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         .build();
                 engageHuman.async().run();
                 engageHuman.addOnHumanIsDisengagingListener(() -> {
-                    say(qiContext, "Tschüss!");
+                    say_sync(qiContext, "Tschüss!");
                     //engagement.requestCancellation();
                 });
                 Profile profile = new Profile();
                 profile.age = human.getEstimatedAge().getYears();
-                conversation(profile);
+                conversation(qiContext, profile);
             }
         });
     }
 
-    public void conversation (Profile profile) {
+    public void conversation (QiContext qiContext, Profile profile) {
         // get dialogs from file
         JSONParser parser = new JSONParser();
         String next = "start";
@@ -166,7 +138,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                     case "talk":
                         texts = (JSONObject) actionObj.get("texts");
                         text = (String) texts.get(profile.formality());
-                        say(qiContext, text);
+                        say_sync(qiContext, text);
                         break;
                     case "question":
                         texts = (JSONObject) actionObj.get("texts");
@@ -193,7 +165,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                                 tictacttoe();
                                 break;
                             default:
-                                say(qiContext, "es scheint so als wäre ein Problem aufgetreten");
+                                say_sync(qiContext, "es scheint so als wäre ein Problem aufgetreten");
                                 break;
                         }
                     case "eventwait":
@@ -201,7 +173,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         eventwait();
                         break;
                     default:
-                        say(qiContext, "es scheint so als wäre ein Problem aufgetreten");
+                        say_sync(qiContext, "es scheint so als wäre ein Problem aufgetreten");
                         break;
                 }
             } catch (IOException e) {
@@ -218,7 +190,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         question_button_1.setOnClickListener(new View.OnClickListener() {
             public void onClick (View view) {
                 Log.i("aa", "button question 1 clicked");
-                say(qiContext, a_ar[0]);
+                say_async(qiContext, a_ar[0]);
                 changeText(a_ar[0]);
             }
         });
@@ -226,7 +198,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         question_button_2.setOnClickListener(new View.OnClickListener() {
             public void onClick (View view) {
                 Log.i("aa", "button question 2 clicked");
-                say(qiContext, a_ar[1]);
+                say_async(qiContext, a_ar[1]);
                 changeText(a_ar[1]);
             }
         });
@@ -234,7 +206,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         question_button_3.setOnClickListener(new View.OnClickListener() {
             public void onClick (View view) {
                 Log.i("aa", "button question 3 clicked");
-                say(qiContext, a_ar[2]);
+                say_async(qiContext, a_ar[2]);
                 changeText(a_ar[2]);
             }
         });
@@ -242,7 +214,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         question_button_4.setOnClickListener(new View.OnClickListener() {
             public void onClick (View view) {
                 Log.i("aa", "button question 4 clicked");
-                say(qiContext, a_ar[3]);
+                say_async(qiContext, a_ar[3]);
                 changeText(a_ar[3]);
             }
         });
@@ -250,7 +222,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         question_button_5.setOnClickListener(new View.OnClickListener() {
             public void onClick (View view) {
                 Log.i("aa", "button question 5 clicked");
-                say(qiContext, a_ar[4]);
+                say_async(qiContext, a_ar[4]);
                 changeText(a_ar[4]);
             }
         });
@@ -263,36 +235,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 .withTexts("Hello")
                 .build();
 
-        /*// Build the action.
-        Listen listen = ListenBuilder.with(qiContext)
-                .withPhraseSet(phraseSet)
-                .build();
-
-        // Run the action synchronously.
-        ListenResult listenResult =  listen.run();
-
-        Log.i("TAG", "Heard phrase: " + listenResult.getHeardPhrase().getText());
-
-        Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
-        // Pepper Sprachausgabe (nur Sprechblase im Simulator)
-        Say sayActionFuture = SayBuilder.with(qiContext)
-                .withText(listenResult.getHeardPhrase().getText())
-                .withLocale(locale)
-                .build();
-        sayActionFuture.run();*/
-        ListenResult listenResult = listen.run();
-        //((TextView)findViewById(R.id.mytextview_id)).setText(listenResult.getHeardPhrase().getText());
-        changeText(listenResult.getHeardPhrase().getText());
-        Log.i("aa", "Heard phrase: " + listenResult.getHeardPhrase().getText());
-
-        //Animationen aus Ressourcen abspielen
-        Animation animation = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.elephant_a001) // Diese kann durch beliebige andere Animationen ersetzt werden
-                .build();
-        AnimateBuilder.with(qiContext)
-                .withAnimation(animation)
-                .build().run();
-    }
 
     public void onRobotFocusLost() {
         // The robot focus is lost.
@@ -302,25 +244,46 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             // The robot focus is refused.
     }
 
-    private void say(QiContext qiContext, String text){
+    private void say_async(QiContext qiContext, String text){
         Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
         Phrase phrase = new Phrase(text);
         Future<Say> sayBuilding = SayBuilder.with(qiContext)
                 .withPhrase(phrase)
                 .withLocale(locale)
                 .buildAsync();
-        Future<Void> sayActionFuture = sayBuilding.andThenCompose(say -> say.async().run());
+        Future<Void> sayActionFuture = sayBuilding.andThenCompose(say_async -> say_async.async().run());
     }
 
-    /*public void say_old(QiContext qiContext, String string){
+    public void say_sync(QiContext qiContext, String text){
         Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
-
+        Phrase phrase = new Phrase(text);
         Say sayActionFuture = SayBuilder.with(qiContext)
-                .withText(string)
+                .withPhrase(phrase)
                 .withLocale(locale)
                 .build();
         sayActionFuture.run();
-    }*/
+    }
+
+    private void changeText(String text){
+        TextView textView  = findViewById(R.id.mytextview_id);
+        textView.setText(text);
+    }
+
+    public void display(QiContext qiContext,String displayText ){
+        View a = findViewById(R.id.btn_question_1);
+        a.setVisibility(View.INVISIBLE);
+        View b = findViewById(R.id.btn_question_2);
+        b.setVisibility(View.INVISIBLE);
+        View c = findViewById(R.id.btn_question_3);
+        c.setVisibility(View.INVISIBLE);
+        View d = findViewById(R.id.btn_question_4);
+        d.setVisibility(View.INVISIBLE);
+        View e = findViewById(R.id.btn_question_5);
+        e.setVisibility(View.INVISIBLE);
+
+        changeText(displayText);
+    }
+
     public int question(QiContext qiContext,String text,JSONArray answers ) {
         JSONArray answer;
         Listen listen;
@@ -385,7 +348,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                                 .build();
                         Arrays.fill(words, null);
                     } else {
-                        say(qiContext, "es scheint so als wäre ein Problem aufgetreten");
+                        say_sync(qiContext, "es scheint so als wäre ein Problem aufgetreten");
                     }
                 }
             }
@@ -424,7 +387,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 listenResult = listen.run();
                 break;
             default:
-                say(qiContext,"hmmmmmmm");
+                say_sync(qiContext,"hmmmmmmm");
         }
         Phrase heardPhrase = listenResult.getHeardPhrase();
         PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
@@ -460,39 +423,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         e.setVisibility(View.INVISIBLE);
 
         changeText(displayText);
-    }
-
-    public void greeting(QiContext qiContext, Profile profile,  JSONObject dialogs){
-
-        String greeting;
-        String RobotName = "Alpha";
-
-        PhraseSet phraseSetPositiv = PhraseSetBuilder.with(qiContext)
-                .withTexts("gut", "schön")
-                .build();
-
-        Listen listen = ListenBuilder.with(qiContext)
-                .withPhraseSet(phraseSetPositiv)
-                .build();
-
-        ListenResult listenResult = listen.run();
-
-        PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
-
-
-
-        if(PhraseSetUtil.equals(matchedPhraseSet, phraseSetPositiv)){
-            say(qiContext, (String) dialogs.get("greetingPositiv")[profile.respect]);
-        }else{
-            say(qiContext, dialogs["greetingNormal"][profile.respect]);
-        }
-
-
-
-
-
-
-
     }
 
     public static ArrayList<Map<String, Object>> faqHandler(JSONObject questionsJSON, int[] foundKeys){
