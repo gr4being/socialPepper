@@ -354,90 +354,63 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             }
         }
 
-        switch (listlength){
+        switch (listlength) {
             case 1:
                 listen = ListenBuilder.with(qiContext)
                         .withPhraseSets(set1)
                         .build();
-        Listen listen = ListenBuilder.with(qiContext)
-                .withPhraseSets(forwards, backwards, stop)
-                .build();
+                Listen listen = ListenBuilder.with(qiContext)
+                        .withPhraseSets(forwards, backwards, stop)
+                        .build();
 
                 listenResult = listen.run();
                 break;
             case 2:
                 listen = ListenBuilder.with(qiContext)
-                        .withPhraseSets(set1,set2)
+                        .withPhraseSets(set1, set2)
                         .build();
 
                 listenResult = listen.run();
                 break;
             case 3:
                 listen = ListenBuilder.with(qiContext)
-                        .withPhraseSets(set1,set2,set3)
+                        .withPhraseSets(set1, set2, set3)
                         .build();
 
                 listenResult = listen.run();
                 break;
             case 4:
                 listen = ListenBuilder.with(qiContext)
-                        .withPhraseSets(set1,set2,set3,set4)
+                        .withPhraseSets(set1, set2, set3, set4)
                         .build();
 
                 listenResult = listen.run();
                 break;
             default:
-                say_sync(qiContext,"hmmmmmmm");
+                say_sync(qiContext, "hmmmmmmm");
         }
         Phrase heardPhrase = listenResult.getHeardPhrase();
         PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
-        if(matchedPhraseSet==set1){
+        if (matchedPhraseSet == set1) {
             answersetnum = 0;
         }
-        if(matchedPhraseSet==set2){
+        if (matchedPhraseSet == set2) {
             answersetnum = 1;
         }
-        if(matchedPhraseSet==set3){
+        if (matchedPhraseSet == set3) {
             answersetnum = 2;
         }
-        if(matchedPhraseSet==set4){
+        if (matchedPhraseSet == set4) {
             answersetnum = 3;
         }
         return answersetnum;
-
-    private void changeText(String text){
-        TextView textView  = findViewById(R.id.mytextview_id);
-        textView.setText(text);
-    }
-
-    public void display(QiContext qiContext,String displayText ){
-        View a = findViewById(R.id.btn_question_1);
-        a.setVisibility(View.INVISIBLE);
-        View b = findViewById(R.id.btn_question_2);
-        b.setVisibility(View.INVISIBLE);
-        View c = findViewById(R.id.btn_question_3);
-        c.setVisibility(View.INVISIBLE);
-        View d = findViewById(R.id.btn_question_4);
-        d.setVisibility(View.INVISIBLE);
-        View e = findViewById(R.id.btn_question_5);
-        e.setVisibility(View.INVISIBLE);
-
-        changeText(displayText);
     }
 
     public static ArrayList<Map<String, Object>> faqHandler(JSONObject questionsJSON, int[] foundKeys){
         ArrayList<Map<String, Object>> rated_questions = new ArrayList<Map<String, Object>>();
         ArrayList<Double> weighted_keysums = new ArrayList<Double>();
         ArrayList<Double> frequencies = new ArrayList<Double>();
-        /*
-        for(int questionNr = 0; questionNr < keyweights.length; questionNr++){
-            double sum = 0;
-            for(int keyWord = 0; keyWord < keyList.length; keyWord++){
-                sum += keyweights[questionNr][keyWord] * foundKeys[keyWord];
-            }
-            understand[questionNr] = sum;
-        }
-*/
+
         // calculate weighted_keysums
         try {
             JSONArray questions = (JSONArray) questionsJSON.get("questions");
