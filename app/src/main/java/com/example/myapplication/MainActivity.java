@@ -78,13 +78,58 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         // get dialogs from file
         JSONParser parser = new JSONParser();
         String next = "start";
+        String text;
+        String event;
+        JSONArray animationfiles;
+        JSONObject texts;
+        JSONObject displaytexts;
+        String displaytext;
+        String action;
         try {
             JSONObject dialogsObj = (JSONObject) parser.parse(new FileReader("./dialogs.json"));
-            JSONArray start = (JSONArray) dialogsObj.get(next);
-            JSONObject typeobj = (JSONObject) start.get(1);
-            String type = (String) typeobj.get("type");
+            JSONObject actionObj = (JSONObject) dialogsObj.get(next);
+            String type = (String) actionObj.get("type");
             switch(type){
-                case "talk":String text = talk();
+                case "talk":
+                    texts = (JSONObject) actionObj.get("texts");
+                    text = (String) texts.get(profile.formality());
+                    say(qiContext,text);
+                    break;
+                case "question":
+                    texts = (JSONObject) actionObj.get("texts");
+                    text = (String) texts.get(profile.formality());
+                    question(qiContext,text);
+                    break;
+                case "animation":
+                    animationfiles = (JSONArray) actionObj.get("filename");
+                    animation(qiContext,animationfiles);
+                    break;
+                case "display":
+                    displaytexts = (JSONObject) actionObj.get("texts");
+                    displaytext = (String) displaytexts.get(profile.formality());
+                    display(qiContext,displaytext);
+                    break;
+                case "action":
+                    action = (String) actionObj.get("action");
+                    switch(action){
+                        case "faq":
+                            faq();
+                            break;
+                        case "tictactoe":
+                            tictacttoe();
+                            break;
+                        default:
+                            say(qiContext,"es scheinnt so als wäre ein Problem aufgetreten");
+                            break;
+                    }
+                case "eventwait":
+                    event = (String) actionObj.get("event");
+                    eventwait();
+                    break;
+                default:
+                    say(qiContext,"es scheinnt so als wäre ein Problem aufgetreten");
+                    break;
+
             }
 
 
@@ -141,6 +186,13 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 .build();
         sayActionFuture.run();
     }
+    public int question(QiContext qiContext,String text ){
+
+    }
+
+    public void display(QiContext qiContext,String displaytext ){
+
+    }
 
     public void greeting(QiContext qiContext, Profile profile,  JSONObject dialogs){
 
@@ -167,7 +219,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             say(qiContext, dialogs["greetingNormal"][profile.respect]);
         }
 
-        public String talk()
 
 
 
