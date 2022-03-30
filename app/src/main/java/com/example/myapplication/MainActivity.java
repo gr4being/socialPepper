@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Switch;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -67,6 +68,35 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     private Activity mainActivity;
     public String[] a_ar = new String[]{};
 
+    private void changeText(String text){
+        TextView textView  = findViewById(R.id.mytextview_id);
+        textView.setText(text);
+    }
+
+    private void say(QiContext qiContext, String text){
+        Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
+        Phrase phrase = new Phrase(text);
+        Future<Say> sayBuilding = SayBuilder.with(qiContext)
+                .withPhrase(phrase)
+                .withLocale(locale)
+                .buildAsync();
+        Future<Void> sayActionFuture = sayBuilding.andThenCompose(say -> say.async().run());
+    }
+
+    public void display(QiContext qiContext,String displayText ){
+        View a = findViewById(R.id.btn_question_1);
+        a.setVisibility(View.INVISIBLE);
+        View b = findViewById(R.id.btn_question_2);
+        b.setVisibility(View.INVISIBLE);
+        View c = findViewById(R.id.btn_question_3);
+        c.setVisibility(View.INVISIBLE);
+        View d = findViewById(R.id.btn_question_4);
+        d.setVisibility(View.INVISIBLE);
+        View e = findViewById(R.id.btn_question_5);
+        e.setVisibility(View.INVISIBLE);
+
+        changeText(displayText);
+    }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -220,6 +250,13 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             }
         });
 
+        // ---------------
+        // chat code
+        // ---------------
+
+        PhraseSet phraseSet = PhraseSetBuilder.with(qiContext)
+                .withTexts("Hello")
+                .build();
 
         /*// Build the action.
         Listen listen = ListenBuilder.with(qiContext)
@@ -238,13 +275,26 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 .withLocale(locale)
                 .build();
         sayActionFuture.run();*/
+        ListenResult listenResult = listen.run();
+        //((TextView)findViewById(R.id.mytextview_id)).setText(listenResult.getHeardPhrase().getText());
+        changeText(listenResult.getHeardPhrase().getText());
+        Log.i("aa", "Heard phrase: " + listenResult.getHeardPhrase().getText());
+
+        //Animationen aus Ressourcen abspielen
+        Animation animation = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.elephant_a001) // Diese kann durch beliebige andere Animationen ersetzt werden
+                .build();
+        AnimateBuilder.with(qiContext)
+                .withAnimation(animation)
+                .build().run();
+    }
 
     public void onRobotFocusLost() {
         // The robot focus is lost.
     }
 
-    public void onRobotFocusRefused(String reason) {
-        // The robot focus is refused.
+    public void onRobotFocusRefused(String reason){
+            // The robot focus is refused.
     }
 
     private void say(QiContext qiContext, String text){
@@ -266,39 +316,126 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 .build();
         sayActionFuture.run();
     }*/
-
-    public int question(QiContext qiContext,String text,JSONArray answers ){
+    public int question(QiContext qiContext,String text,JSONArray answers ) {
+        JSONArray answer;
+        Listen listen;
+        ListenResult listenResult;
+        int answersetnum = 0;
+        PhraseSet set1;
+        PhraseSet set2;
+        PhraseSet set3;
+        PhraseSet set4;
         int listlength = answers.length();
-        if(listlength>0){
-            PhraseSet set1 = PhraseSetBuilder.with(qiContext)
-                    .withTexts()
+        String[] words = {};
+        if (listlength > 0) {
+            try {
+                answer = (JSONArray) answers.get(0);
+                for (int i = 0; i < answer.length(); i++) {
+                    words[i] = (String) answer.get(i);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            set1 = PhraseSetBuilder.with(qiContext)
+                    .withTexts(words)
                     .build();
-            if(listlength>1){
-                PhraseSet set2 = PhraseSetBuilder.with(qiContext)
-                        .withTexts("Hello", "Hi")
+            Arrays.fill(words, null);
+            if (listlength > 1) {
+                try {
+                    answer = (JSONArray) answers.get(1);
+                    for (int i = 0; i < answer.length(); i++) {
+                        words[i] = (String) answer.get(i);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                set2 = PhraseSetBuilder.with(qiContext)
+                        .withTexts(words)
                         .build();
-                if(listlength>2){
-                    PhraseSet set3 = PhraseSetBuilder.with(qiContext)
-                            .withTexts("Hello", "Hi")
+                Arrays.fill(words, null);
+                if (listlength > 2) {
+                    try {
+                        answer = (JSONArray) answers.get(2);
+                        for (int i = 0; i < answer.length(); i++) {
+                            words[i] = (String) answer.get(i);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    set3 = PhraseSetBuilder.with(qiContext)
+                            .withTexts(words)
                             .build();
-                    if(listlength>3){
-                        PhraseSet set4 = PhraseSetBuilder.with(qiContext)
-                                .withTexts("Hello", "Hi")
+                    Arrays.fill(words, null);
+                    if (listlength == 4) {
+                        try {
+                            answer = (JSONArray) answers.get(3);
+                            for (int i = 0; i < answer.length(); i++) {
+                                words[i] = (String) answer.get(i);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        set4 = PhraseSetBuilder.with(qiContext)
+                                .withTexts(words)
                                 .build();
+                        Arrays.fill(words, null);
+                    } else {
+                        say(qiContext, "es scheint so als wäre ein Problem aufgetreten");
                     }
                 }
             }
         }
 
-
-
+        switch (listlength){
+            case 1:
+                listen = ListenBuilder.with(qiContext)
+                        .withPhraseSets(set1)
+                        .build();
         Listen listen = ListenBuilder.with()
                 .withPhraseSets(forwards, backwards, stop)
                 .build();
 
-        ListenResult listenResult = listen.run();
+                listenResult = listen.run();
+                break;
+            case 2:
+                listen = ListenBuilder.with(qiContext)
+                        .withPhraseSets(set1,set2)
+                        .build();
 
-    }
+                listenResult = listen.run();
+                break;
+            case 3:
+                listen = ListenBuilder.with(qiContext)
+                        .withPhraseSets(set1,set2,set3)
+                        .build();
+
+                listenResult = listen.run();
+                break;
+            case 4:
+                listen = ListenBuilder.with(qiContext)
+                        .withPhraseSets(set1,set2,set3,set4)
+                        .build();
+
+                listenResult = listen.run();
+                break;
+            default:
+                say(qiContext,"hmmmmmmm");
+        }
+        Phrase heardPhrase = listenResult.getHeardPhrase();
+        PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
+        if(matchedPhraseSet==set1){
+            answersetnum = 0;
+        }
+        if(matchedPhraseSet==set2){
+            answersetnum = 1;
+        }
+        if(matchedPhraseSet==set3){
+            answersetnum = 2;
+        }
+        if(matchedPhraseSet==set4){
+            answersetnum = 3;
+        }
+        return answersetnum;
 
     private void changeText(String text){
         TextView textView  = findViewById(R.id.mytextview_id);
@@ -344,6 +481,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         }else{
             say(qiContext, dialogs["greetingNormal"][profile.respect]);
         }
+
 
 
 
