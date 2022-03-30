@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -24,6 +25,7 @@ import java.util.Date;
 
 import androidx.core.app.ActivityCompat;
 
+import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
@@ -36,6 +38,7 @@ import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.actuation.Animation;
 import com.aldebaran.qi.sdk.object.conversation.Listen;
 import com.aldebaran.qi.sdk.object.conversation.ListenResult;
+import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.PhraseSet;
 import com.aldebaran.qi.sdk.object.conversation.Say;
 import com.aldebaran.qi.sdk.object.locale.Language;
@@ -180,7 +183,17 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         // The robot focus is refused.
     }
 
-    public void say(QiContext qiContext, String string){
+    private void say(QiContext qiContext, String text){
+        Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
+        Phrase phrase = new Phrase(text);
+        Future<Say> sayBuilding = SayBuilder.with(qiContext)
+                .withPhrase(phrase)
+                .withLocale(locale)
+                .buildAsync();
+        Future<Void> sayActionFuture = sayBuilding.andThenCompose(say -> say.async().run());
+    }
+
+    /*public void say_old(QiContext qiContext, String string){
         Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
 
         Say sayActionFuture = SayBuilder.with(qiContext)
@@ -188,7 +201,8 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 .withLocale(locale)
                 .build();
         sayActionFuture.run();
-    }
+    }*/
+
     public int question(QiContext qiContext,String text,JSONArray answers ){
         int listlength = answers.length();
         if(listlength>0){
@@ -222,8 +236,24 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     }
 
-    public void display(QiContext qiContext,String displaytext ){
+    private void changeText(String text){
+        TextView textView  = findViewById(R.id.mytextview_id);
+        textView.setText(text);
+    }
 
+    public void display(QiContext qiContext,String displayText ){
+        View a = findViewById(R.id.btn_question_1);
+        a.setVisibility(View.INVISIBLE);
+        View b = findViewById(R.id.btn_question_2);
+        b.setVisibility(View.INVISIBLE);
+        View c = findViewById(R.id.btn_question_3);
+        c.setVisibility(View.INVISIBLE);
+        View d = findViewById(R.id.btn_question_4);
+        d.setVisibility(View.INVISIBLE);
+        View e = findViewById(R.id.btn_question_5);
+        e.setVisibility(View.INVISIBLE);
+
+        changeText(displayText);
     }
 
     public void greeting(QiContext qiContext, Profile profile,  JSONObject dialogs){
