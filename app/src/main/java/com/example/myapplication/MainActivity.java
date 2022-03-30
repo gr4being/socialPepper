@@ -31,6 +31,8 @@ import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.builder.AnimateBuilder;
 import com.aldebaran.qi.sdk.builder.AnimationBuilder;
+import com.aldebaran.qi.sdk.builder.ApproachHumanBuilder;
+import com.aldebaran.qi.sdk.builder.EngageHumanBuilder;
 import com.aldebaran.qi.sdk.builder.ListenBuilder;
 import com.aldebaran.qi.sdk.builder.PhraseSetBuilder;
 import com.aldebaran.qi.sdk.builder.SayBuilder;
@@ -41,6 +43,10 @@ import com.aldebaran.qi.sdk.object.conversation.ListenResult;
 import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.PhraseSet;
 import com.aldebaran.qi.sdk.object.conversation.Say;
+import com.aldebaran.qi.sdk.object.human.Human;
+import com.aldebaran.qi.sdk.object.humanawareness.ApproachHuman;
+import com.aldebaran.qi.sdk.object.humanawareness.EngageHuman;
+import com.aldebaran.qi.sdk.object.humanawareness.HumanAwareness;
 import com.aldebaran.qi.sdk.object.locale.Language;
 import com.aldebaran.qi.sdk.object.locale.Locale;
 import com.aldebaran.qi.sdk.object.locale.Region;
@@ -79,9 +85,29 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     //Das macht der Pepper sobald das Programm startet
     public void onRobotFocusGained(QiContext qiContext) {
+        HumanAwareness humanAwareness = qiContext.getHumanAwareness();
+        humanAwareness.addOnEngagedHumanChangedListener(human -> {
+            if (human != null) {
+                // Human recommendedHuman = humanAwareness.getRecommendedHumanToApproach();
+                ApproachHuman approachHuman = ApproachHumanBuilder.with(qiContext)
+                        .withHuman(human)
+                        .build();
+                approachHuman.async().run();
+                EngageHuman engageHuman = EngageHumanBuilder.with(qiContext)
+                        .withHuman(human)
+                        .build();
+                engageHuman.async().run();
+                conversation();
+            }
+        });
+    }
+
+    public void conversation () {
+        Profile profile = new Profile();
         // get dialogs from file
         JSONParser parser = new JSONParser();
         String next = "start";
+        String type;
         String text;
         String event;
         JSONArray answers;
@@ -90,65 +116,67 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         JSONObject displaytexts;
         String displaytext;
         String action;
-        try {
-            JSONObject dialogsObj = (JSONObject) parser.parse(new FileReader("./dialogs.json"));
-            JSONObject actionObj = (JSONObject) dialogsObj.get(next);
-            String type = (String) actionObj.get("type");
-            switch(type){
-                case "talk":
-                    texts = (JSONObject) actionObj.get("texts");
-                    text = (String) texts.get(profile.formality());
-                    say(qiContext,text);
-                    break;
-                case "question":
-                    texts = (JSONObject) actionObj.get("texts");
-                    text = (String) texts.get(profile.formality());
-                    answers = (JSONArray) actionObj.get("answers");
-                    question(qiContext,text,answers);
-                    break;
-                case "animation":
-                    animationfiles = (JSONArray) actionObj.get("filename");
-                    animation(qiContext,animationfiles);
-                    break;
-                case "display":
-                    displaytexts = (JSONObject) actionObj.get("texts");
-                    displaytext = (String) displaytexts.get(profile.formality());
-                    display(qiContext,displaytext);
-                    break;
-                case "action":
-                    action = (String) actionObj.get("action");
-                    switch(action){
-                        case "faq":
-                            faq();
-                            break;
-                        case "tictactoe":
-                            tictacttoe();
-                            break;
-                        default:
-                            say(qiContext,"es scheinnt so als wäre ein Problem aufgetreten");
-                            break;
-                    }
-                case "eventwait":
-                    event = (String) actionObj.get("event");
-                    eventwait();
-                    break;
-                default:
-                    say(qiContext,"es scheinnt so als wäre ein Problem aufgetreten");
-                    break;
-
+        Boolean conversation_finished = false;
+        JSONObject dialogsObj = (JSONObject) parser.parse(new FileReader("./dialogs.json"));
+        while (!conversation_finished) {
+            try {
+                JSONObject actionObj = (JSONObject) dialogsObj.get(next);
+                next = (String) actionObj.get("then");
+                type = (String) actionObj.get("type");
+                switch (type) {
+                    case "talk":
+                        texts = (JSONObject) actionObj.get("texts");
+                        text = (String) texts.get(profile.formality());
+                        say(qiContext, text);
+                        break;
+                    case "question":
+                        texts = (JSONObject) actionObj.get("texts");
+                        text = (String) texts.get(profile.formality());
+                        answers = (JSONArray) actionObj.get("answers");
+                        question(qiContext, text, answers);
+                        break;
+                    case "animation":
+                        animationfiles = (JSONArray) actionObj.get("filename");
+                        animation(qiContext, animationfiles);
+                        break;
+                    case "display":
+                        displaytexts = (JSONObject) actionObj.get("texts");
+                        displaytext = (String) displaytexts.get(profile.formality());
+                        display(qiContext, displaytext);
+                        break;
+                    case "action":
+                        action = (String) actionObj.get("action");
+                        switch (action) {
+                            case "faq":
+                                faq();
+                                break;
+                            case "tictactoe":
+                                tictacttoe();
+                                break;
+                            default:
+                                say(qiContext, "es scheint so als wäre ein Problem aufgetreten");
+                                break;
+                        }
+                    case "eventwait":
+                        event = (String) actionObj.get("event");
+                        eventwait();
+                        break;
+                    default:
+                        say(qiContext, "es scheint so als wäre ein Problem aufgetreten");
+                        break;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
+    }
 
 
-        // Build the action.
+        /*// Build the action.
         Listen listen = ListenBuilder.with(qiContext)
                 .withPhraseSet(phraseSet)
                 .build();
@@ -164,16 +192,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 .withText(listenResult.getHeardPhrase().getText())
                 .withLocale(locale)
                 .build();
-        sayActionFuture.run();
-
-        //Animationen aus Ressourcen abspielen
-        Animation animation = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.elephant_a001) // Diese kann durch beliebige andere Animationen ersetzt werden
-                .build();
-        AnimateBuilder.with(qiContext)
-                .withAnimation(animation)
-                .build().run();
-    }
+        sayActionFuture.run();*/
 
     public void onRobotFocusLost() {
         // The robot focus is lost.
