@@ -190,7 +190,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 changeText(a_ar[4]);
             }
         });
-        Button back_button = (Button) findViewById(R.id.back_btn);
+        Button back_button = (Button) findViewById(R.id.btn_back);
         back_button.setOnClickListener(new View.OnClickListener() {
             public void onClick (View view) {
                 Log.i("aa", "back clicked");
@@ -247,7 +247,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                                 faq(qiContext,questionObj);
                                 break;
                             case "tictactoe":
-                                tictacttoe();
+                                //tictacttoe(); never gonna happen
                                 break;
                             default:
                                 say_sync(qiContext, "es scheint so als wäre ein Problem aufgetreten");

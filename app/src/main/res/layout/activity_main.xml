@@ -34,6 +34,21 @@
         app:layout_constraintVertical_bias="0.342" />
 
     <Button
+        android:id="@+id/btn_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_red_dark"
+        android:text="back"
+        android:textColor="@android:color/black"
+        app:iconTint="#fc030f"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mytextview_id"
+        app:layout_constraintVertical_bias="0.551" />
+
+    <Button
         android:visibility="invisible"
         android:id="@+id/btn_question_1"
         android:layout_width="wrap_content"
