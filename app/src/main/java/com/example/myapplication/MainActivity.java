@@ -72,7 +72,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     private Activity mainActivity;
     public String[] a_ar = new String[]{};
 
-    JSONObject questionObj = null;
+    JSONObject questionsObj = null;
     JSONObject dialogsObj = null;
     String jsonString = null;
 
@@ -104,7 +104,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             is.read(buffer);
             is.close();
             jsonString = new String(buffer, "UTF-8");
-            questionObj = new JSONObject(jsonString);
+            questionsObj = new JSONObject(jsonString);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -736,11 +736,9 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     }
 
     public void faq(QiContext qiContext) {
-        JSONObject questions =(JSONObject) parser.parse(new FileReader("./questions.json"));
-
         JSONArray keywords = null;
         try {
-            keywords = (JSONArray) questions.getJSONArray("keywords");
+            keywords = (JSONArray) questionsObj.getJSONArray("keywords");
         } catch (JSONException e) {
             e.printStackTrace();
         }
