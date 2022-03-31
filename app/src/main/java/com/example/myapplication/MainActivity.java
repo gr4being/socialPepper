@@ -18,9 +18,11 @@ import org.json.JSONException;
 import org.json.simple.parser.JSONParser;
 
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,7 +72,9 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     private Activity mainActivity;
     public String[] a_ar = new String[]{};
 
-
+    JSONObject questionObj = null;
+    JSONObject dialogsObj = null;
+    String jsonString = null;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +97,37 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     //Das macht der Pepper sobald das Programm startet
     public void onRobotFocusGained(QiContext qiContext) {
+        try {
+            InputStream is = getApplicationContext().getAssets().open("robot/questions.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            jsonString = new String(buffer, "UTF-8");
+            questionObj = new JSONObject(jsonString);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream is = getApplicationContext().getAssets().open("robot/dialogs.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            jsonString = new String(buffer, "UTF-8");
+            dialogsObj = new JSONObject(jsonString);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         HumanAwareness humanAwareness = qiContext.getHumanAwareness();
         humanAwareness.addOnEngagedHumanChangedListener(human -> {
             if (human != null) {
@@ -209,7 +244,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         action = (String) actionObj.get("action");
                         switch (action) {
                             case "faq":
-                                faq();
+                                faq(qiContext,questionObj);
                                 break;
                             case "tictactoe":
                                 tictacttoe();
@@ -695,128 +730,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        List<PhraseSet> keywordsAsSets = new List<PhraseSet>() {
-            @Override
-            public int size() {
-                return 0;
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return false;
-            }
-
-            @Override
-            public boolean contains(@Nullable Object o) {
-                return false;
-            }
-
-            @NonNull
-            @Override
-            public Iterator<PhraseSet> iterator() {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public Object[] toArray() {
-                return new Object[0];
-            }
-
-            @NonNull
-            @Override
-            public <T> T[] toArray(@NonNull T[] ts) {
-                return null;
-            }
-
-            @Override
-            public boolean add(PhraseSet phraseSet) {
-                return false;
-            }
-
-            @Override
-            public boolean remove(@Nullable Object o) {
-                return false;
-            }
-
-            @Override
-            public boolean containsAll(@NonNull Collection<?> collection) {
-                return false;
-            }
-
-            @Override
-            public boolean addAll(@NonNull Collection<? extends PhraseSet> collection) {
-                return false;
-            }
-
-            @Override
-            public boolean addAll(int i, @NonNull Collection<? extends PhraseSet> collection) {
-                return false;
-            }
-
-            @Override
-            public boolean removeAll(@NonNull Collection<?> collection) {
-                return false;
-            }
-
-            @Override
-            public boolean retainAll(@NonNull Collection<?> collection) {
-                return false;
-            }
-
-            @Override
-            public void clear() {
-
-            }
-
-            @Override
-            public PhraseSet get(int i) {
-                return null;
-            }
-
-            @Override
-            public PhraseSet set(int i, PhraseSet phraseSet) {
-                return null;
-            }
-
-            @Override
-            public void add(int i, PhraseSet phraseSet) {
-
-            }
-
-            @Override
-            public PhraseSet remove(int i) {
-                return null;
-            }
-
-            @Override
-            public int indexOf(@Nullable Object o) {
-                return 0;
-            }
-
-            @Override
-            public int lastIndexOf(@Nullable Object o) {
-                return 0;
-            }
-
-            @NonNull
-            @Override
-            public ListIterator<PhraseSet> listIterator() {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public ListIterator<PhraseSet> listIterator(int i) {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public List<PhraseSet> subList(int i, int i1) {
-                return null;
-            }
-        };
+        List<PhraseSet> keywordsAsSets = new ArrayList<PhraseSet>();
         for (String keyword : keywords) {
             keywordsAsSets.add(PhraseSetBuilder.with(qiContext)
                     .withTexts(keyword)
