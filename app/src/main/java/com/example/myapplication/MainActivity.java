@@ -187,55 +187,46 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         }
     }
 
-        Button question_button_1 = (Button) findViewById(R.id.btn_question_1);
-        question_button_1.setOnClickListener(new View.OnClickListener() {
-            public void onClick (View view) {
-                Log.i("aa", "button question 1 clicked");
-                say_async(qiContext, a_ar[0]);
-                changeText(a_ar[0]);
-            }
-        });
-        Button question_button_2 = (Button) findViewById(R.id.btn_question_2);
-        question_button_2.setOnClickListener(new View.OnClickListener() {
-            public void onClick (View view) {
-                Log.i("aa", "button question 2 clicked");
-                say_async(qiContext, a_ar[1]);
-                changeText(a_ar[1]);
-            }
-        });
-        Button question_button_3 = (Button) findViewById(R.id.btn_question_3);
-        question_button_3.setOnClickListener(new View.OnClickListener() {
-            public void onClick (View view) {
-                Log.i("aa", "button question 3 clicked");
-                say_async(qiContext, a_ar[2]);
-                changeText(a_ar[2]);
-            }
-        });
-        Button question_button_4 = (Button) findViewById(R.id.btn_question_4);
-        question_button_4.setOnClickListener(new View.OnClickListener() {
-            public void onClick (View view) {
-                Log.i("aa", "button question 4 clicked");
-                say_async(qiContext, a_ar[3]);
-                changeText(a_ar[3]);
-            }
-        });
-        Button question_button_5 = (Button) findViewById(R.id.btn_question_5);
-        question_button_5.setOnClickListener(new View.OnClickListener() {
-            public void onClick (View view) {
-                Log.i("aa", "button question 5 clicked");
-                say_async(qiContext, a_ar[4]);
-                changeText(a_ar[4]);
-            }
-        });
-
-        // ---------------
-        // chat code
-        // ---------------
-
-        PhraseSet phraseSet = PhraseSetBuilder.with(qiContext)
-                .withTexts("Hello")
-                .build();
-
+    Button question_button_1 = (Button) findViewById(R.id.btn_question_1);
+    question_button_1.setOnClickListener(new View.OnClickListener() {
+        public void onClick (View view) {
+            Log.i("aa", "button question 1 clicked");
+            say_async(qiContext, a_ar[0]);
+            changeText(a_ar[0]);
+        }
+    });
+    Button question_button_2 = (Button) findViewById(R.id.btn_question_2);
+    question_button_2.setOnClickListener(new View.OnClickListener() {
+        public void onClick (View view) {
+            Log.i("aa", "button question 2 clicked");
+            say_async(qiContext, a_ar[1]);
+            changeText(a_ar[1]);
+        }
+    });
+    Button question_button_3 = (Button) findViewById(R.id.btn_question_3);
+    question_button_3.setOnClickListener(new View.OnClickListener() {
+        public void onClick (View view) {
+            Log.i("aa", "button question 3 clicked");
+            say_async(qiContext, a_ar[2]);
+            changeText(a_ar[2]);
+        }
+    });
+    Button question_button_4 = (Button) findViewById(R.id.btn_question_4);
+    question_button_4.setOnClickListener(new View.OnClickListener() {
+        public void onClick (View view) {
+            Log.i("aa", "button question 4 clicked");
+            say_async(qiContext, a_ar[3]);
+            changeText(a_ar[3]);
+        }
+    });
+    Button question_button_5 = (Button) findViewById(R.id.btn_question_5);
+    question_button_5.setOnClickListener(new View.OnClickListener() {
+        public void onClick (View view) {
+            Log.i("aa", "button question 5 clicked");
+            say_async(qiContext, a_ar[4]);
+            changeText(a_ar[4]);
+        }
+    });
 
     public void onRobotFocusLost() {
         // The robot focus is lost.
