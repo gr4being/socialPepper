@@ -564,6 +564,42 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         Animation nod_no = AnimationBuilder.with(qiContext) // Create the builder with the context.
                 .withResources(R.raw.nod_no) // Set the animation resource.
                 .build(); // Build the animation.
+        Animation nod_yes = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.nod_yes) // Set the animation resource.
+                .build(); // Build the animation.
+        Animation show_hand = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.show_hand) // Set the animation resource.
+                .build(); // Build the animation.
+        Animation show_screen = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.show_screen) // Set the animation resource.
+                .build(); // Build the animation.
+        Animation show_self = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.show_self) // Set the animation resource.
+                .build(); // Build the animation.
+        Animation show_user = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.show_user) // Set the animation resource.
+                .build(); // Build the animation.
+        Animation skispringer = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.skispringer) // Set the animation resource.
+                .build(); // Build the animation.
+        Animation stand1 = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.stand1) // Set the animation resource.
+                .build(); // Build the animation.
+        Animation stand2 = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.stand2) // Set the animation resource.
+                .build(); // Build the animation.
+        Animation stand3 = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.stand3) // Set the animation resource.
+                .build(); // Build the animation.
+        Animation thinking = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.thinking) // Set the animation resource.
+                .build(); // Build the animation.
+        Animation verbeugen = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.verbeugen) // Set the animation resource.
+                .build(); // Build the animation.
+        Animation wave = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.wave) // Set the animation resource.
+                .build(); // Build the animation.
 
         int rnd = new Random().nextInt(animationNames.length());
         String animationName = "standart";
@@ -575,19 +611,76 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
         switch(animationName){
             case "fist":
-                Animate fistAnimate = AnimateBuilder.with(qiContext) // Create the builder with the context.
+                AnimateBuilder.with(qiContext) // Create the builder with the context.
                         .withAnimation(fist) // Set the animation.
-                        .build(); // Build the animate action
+                        .build().async().run(); // Build the animate action and run it
                 break;
             case "handshake":
-                Animate handshakeAnimate = AnimateBuilder.with(qiContext) // Create the builder with the context.
+                AnimateBuilder.with(qiContext) // Create the builder with the context.
                         .withAnimation(handshake) // Set the animation.
-                        .build(); // Build the animate action
+                        .build().async().run(); // Build the animate action and run it
                 break;
             case "nod_no":
-                Animate nod_noAnitmate = AnimateBuilder.with(qiContext) // Create the builder with the context.
+                AnimateBuilder.with(qiContext) // Create the builder with the context.
                         .withAnimation(nod_no) // Set the animation.
-                        .build(); // Build the animate action
+                        .build().async().run(); // Build the animate action and run it
+                break;
+            case "nod_yes":
+                AnimateBuilder.with(qiContext) // Create the builder with the context.
+                        .withAnimation(nod_yes) // Set the animation.
+                        .build().async().run(); // Build the animate action and run it
+                break;
+            case "show_hand":
+                AnimateBuilder.with(qiContext) // Create the builder with the context.
+                        .withAnimation(show_hand) // Set the animation.
+                        .build().async().run(); // Build the animate action and run it
+                break;
+            case "show_screen":
+                AnimateBuilder.with(qiContext) // Create the builder with the context.
+                        .withAnimation(show_screen) // Set the animation.
+                        .build().async().run(); // Build the animate action and run it
+            case "show_self":
+                AnimateBuilder.with(qiContext) // Create the builder with the context.
+                        .withAnimation(show_self) // Set the animation.
+                        .build().async().run(); // Build the animate action and run it
+            case "show_user":
+                AnimateBuilder.with(qiContext) // Create the builder with the context.
+                        .withAnimation(show_user) // Set the animation.
+                        .build().async().run(); // Build the animate action and run it
+
+            case "skispringer":
+                AnimateBuilder.with(qiContext) // Create the builder with the context.
+                        .withAnimation(skispringer) // Set the animation.
+                        .build().async().run(); // Build the animate action and run it
+            case "stand1":
+                AnimateBuilder.with(qiContext) // Create the builder with the context.
+                        .withAnimation(stand1) // Set the animation.
+                        .build().async().run(); // Build the animate action and run it
+                break;
+            case "stand2":
+                AnimateBuilder.with(qiContext) // Create the builder with the context.
+                        .withAnimation(stand2) // Set the animation.
+                        .build().async().run(); // Build the animate action and run it
+                break;
+            case "stand3":
+                AnimateBuilder.with(qiContext) // Create the builder with the context.
+                        .withAnimation(stand3) // Set the animation.
+                        .build().async().run(); // Build the animate action and run it
+                break;
+            case "thinking":
+                AnimateBuilder.with(qiContext) // Create the builder with the context.
+                        .withAnimation(thinking) // Set the animation.
+                        .build().async().run(); // Build the animate action and run it
+                break;
+            case "verbeugen":
+                AnimateBuilder.with(qiContext) // Create the builder with the context.
+                        .withAnimation(verbeugen) // Set the animation.
+                        .build().async().run(); // Build the animate action and run it
+                break;
+            case "wave":
+                AnimateBuilder.with(qiContext) // Create the builder with the context.
+                        .withAnimation(wave) // Set the animation.
+                        .build().async().run(); // Build the animate action and run it
                 break;
             default:
                 System.out.println("fehler");
