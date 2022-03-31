@@ -239,7 +239,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         String text;
         String event;
         JSONArray answers;
-        JSONArray animationfiles;
         JSONObject texts;
         JSONObject displaytexts;
         String displaytext;
@@ -266,8 +265,8 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         next = then.getString(index);
                         break;
                     case "animation":
-                        animationfiles = (JSONArray) actionObj.get("filename");
-                        animation(qiContext, animationfiles);
+                        JSONObject animationfiles = (JSONObject) actionObj.get("filename");
+                        animation(qiContext, animationfiles.getString(profile.formality()));
                         break;
                     case "display":
                         displaytexts = (JSONObject) actionObj.get("texts");
@@ -305,8 +304,10 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         }
     }
 
-    public void standby() {
-        // run random animations
+    public void standby(QiContext qiContext) {
+        String[] standbyAnimations = {"stand1", "stand2", "stand3"};
+        int rnd = new Random().nextInt(standbyAnimations.length);
+        animation(qiContext, standbyAnimations[rnd]);
 
     }
 
@@ -628,7 +629,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         return rated_questions;
     }
 
-    public static void animation(QiContext qiContext, JSONArray animationNames){
+    public void animation(QiContext qiContext, String animationName){
         Animation fist = AnimationBuilder.with(qiContext) // Create the builder with the context.
                 .withResources(R.raw.fist) // Set the animation resource.
                 .build(); // Build the animation.
@@ -674,14 +675,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         Animation wave = AnimationBuilder.with(qiContext) // Create the builder with the context.
                 .withResources(R.raw.wave) // Set the animation resource.
                 .build(); // Build the animation.
-
-        int rnd = new Random().nextInt(animationNames.length());
-        String animationName = "standart";
-        try {
-            animationName = animationNames.getString(rnd);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         switch(animationName){
             case "fist":
@@ -757,7 +750,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         .build().async().run(); // Build the animate action and run it
                 break;
             default:
-                System.out.println("fehler");
+                say_sync(qiContext, "Ich kenne die auszuführende Aktion nicht.");
                 break;
         }
     }
