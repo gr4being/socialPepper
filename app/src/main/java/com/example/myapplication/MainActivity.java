@@ -72,7 +72,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     private Activity mainActivity;
     public String[] a_ar = new String[]{};
 
-    JSONObject questionObj = null;
+    JSONObject questionsObj = null;
     JSONObject dialogsObj = null;
     String jsonString = null;
 
@@ -104,7 +104,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             is.read(buffer);
             is.close();
             jsonString = new String(buffer, "UTF-8");
-            questionObj = new JSONObject(jsonString);
+            questionsObj = new JSONObject(jsonString);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -147,6 +147,8 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 Profile profile = new Profile();
                 profile.age = human.getEstimatedAge().getYears();
                 conversation(qiContext, profile);
+            } else {
+                standby();
             }
         });
 
@@ -194,15 +196,20 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         back_button.setOnClickListener(new View.OnClickListener() {
             public void onClick (View view) {
                 Log.i("aa", "back clicked");
-
+                JSONParser parser = new JSONParser();
+                JSONObject dialogsObj = (JSONObject) parser.parse(new FileReader("./dialogs.json"));
+                JSONObject action = dialogsObj.getJSONObject(next);
+                next = action.getString("before");
             }
         });
     }
+    String next;
 
     public void conversation (QiContext qiContext, Profile profile) {
+
         // get dialogs from file
         JSONParser parser = new JSONParser();
-        String next = "start";
+        next = "start";
         String type;
         String text;
         String event;
@@ -269,6 +276,11 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 e.printStackTrace();
             }
         }
+    }
+
+    public void standby() {
+        // run random animations
+
     }
 
     public void onRobotFocusLost() {
@@ -723,17 +735,17 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         }
     }
 
-    public void faq(QiContext qiContext, JSONObject questions) {
-        String[] keywords = null;
+    public void faq(QiContext qiContext) {
+        JSONArray keywords = null;
         try {
-            keywords = (String[]) questions.get("keywords");
+            keywords = (JSONArray) questionsObj.getJSONArray("keywords");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         List<PhraseSet> keywordsAsSets = new ArrayList<PhraseSet>();
-        for (String keyword : keywords) {
+        for (int i=0; i<keywords.length(); i++) {
             keywordsAsSets.add(PhraseSetBuilder.with(qiContext)
-                    .withTexts(keyword)
+                    .withTexts(keywords.getString(i))
                     .build());
         }
         Listen listen = ListenBuilder.with(qiContext)
@@ -743,8 +755,8 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         ListenResult listenResult = listen.run();
 
         PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
-        double[] foundKeys = new double[keywords.length];
-        for (int i = 0; i < keywords.length; i++) {
+        double[] foundKeys = new double[keywords.length()];
+        for (int i = 0; i < keywords.length(); i++) {
             if (matchedPhraseSet.equals(keywordsAsSets.get(i))) {
                 foundKeys[i] = 1; //momentan ist es nur möglich, dass ein einzelnes Keyword erkannt wird.
                 //mit einem anderen Sprachinterpreten könnten mehrere Keywörter erkannt werden und
@@ -752,6 +764,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 foundKeys[i] = 0;
             }
         }
+
     }
 }
 
