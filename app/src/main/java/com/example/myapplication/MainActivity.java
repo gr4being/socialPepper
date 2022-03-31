@@ -594,5 +594,157 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 break;
         }
     }
+
+    public void faq(QiContext qiContext, JSONObject questions) {
+        String[] keywords = null;
+        try {
+            keywords = (String[]) questions.get("keywords");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        List<PhraseSet> keywordsAsSets = new List<PhraseSet>() {
+            @Override
+            public int size() {
+                return 0;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+
+            @Override
+            public boolean contains(@Nullable Object o) {
+                return false;
+            }
+
+            @NonNull
+            @Override
+            public Iterator<PhraseSet> iterator() {
+                return null;
+            }
+
+            @NonNull
+            @Override
+            public Object[] toArray() {
+                return new Object[0];
+            }
+
+            @NonNull
+            @Override
+            public <T> T[] toArray(@NonNull T[] ts) {
+                return null;
+            }
+
+            @Override
+            public boolean add(PhraseSet phraseSet) {
+                return false;
+            }
+
+            @Override
+            public boolean remove(@Nullable Object o) {
+                return false;
+            }
+
+            @Override
+            public boolean containsAll(@NonNull Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean addAll(@NonNull Collection<? extends PhraseSet> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean addAll(int i, @NonNull Collection<? extends PhraseSet> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean removeAll(@NonNull Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean retainAll(@NonNull Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public void clear() {
+
+            }
+
+            @Override
+            public PhraseSet get(int i) {
+                return null;
+            }
+
+            @Override
+            public PhraseSet set(int i, PhraseSet phraseSet) {
+                return null;
+            }
+
+            @Override
+            public void add(int i, PhraseSet phraseSet) {
+
+            }
+
+            @Override
+            public PhraseSet remove(int i) {
+                return null;
+            }
+
+            @Override
+            public int indexOf(@Nullable Object o) {
+                return 0;
+            }
+
+            @Override
+            public int lastIndexOf(@Nullable Object o) {
+                return 0;
+            }
+
+            @NonNull
+            @Override
+            public ListIterator<PhraseSet> listIterator() {
+                return null;
+            }
+
+            @NonNull
+            @Override
+            public ListIterator<PhraseSet> listIterator(int i) {
+                return null;
+            }
+
+            @NonNull
+            @Override
+            public List<PhraseSet> subList(int i, int i1) {
+                return null;
+            }
+        };
+        for (String keyword : keywords) {
+            keywordsAsSets.add(PhraseSetBuilder.with(qiContext)
+                    .withTexts(keyword)
+                    .build());
+        }
+        Listen listen = ListenBuilder.with(qiContext)
+                .withPhraseSets(keywordsAsSets)
+                .build();
+
+        ListenResult listenResult = listen.run();
+
+        PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
+        double[] foundKeys = new double[keywords.length];
+        for (int i = 0; i < keywords.length; i++) {
+            if (matchedPhraseSet.equals(keywordsAsSets.get(i))) {
+                foundKeys[i] = 1; //momentan ist es nur möglich, dass ein einzelnes Keyword erkannt wird.
+                //mit einem anderen Sprachinterpreten könnten mehrere Keywörter erkannt werden und
+            } else {
+                foundKeys[i] = 0;
+            }
+        }
+    }
 }
 
