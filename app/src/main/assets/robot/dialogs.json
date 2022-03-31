@@ -1,252 +1,275 @@
 {
   "start": {
     "type": "talk",
-    "texts": {"informal":["Hi, ich bin %s.", "Ich heiße %s","Hi, %s der Name."], "standard":["Hallo, ich heiße %s.","Hallo, ich bin %s"], "formal":["Guten Tag, ich heiße %s.","Guten Tag, ich bin %s."]},
-    "textvar" : "Alpha",
-    "then": "greet"
+    "texts": {"teen":["Hi, ich bin Alpha.", "Ich heiße Alpha","Hi, Alpha der Name."], "child":["Hallo, ich heiße Alpha.","Hallo, ich bin Alpha"], "adult":["Guten Tag, ich heiße Alpha.","Guten Tag, ich bin Alpha."]},
+    "then": ["greet"]
   },
   "greet": {
     "type": "animation",
-    "filename": {"informal":"fist", "standard":"wave", "formal":"handshake"},
-    "then": "q1display"
+    "filename": {"teen":["fist"], "child":["wave"], "adult":["handshake"]},
+    "then": ["q1display"]
   },
 
   "q1display": {
     "type": "display",
-    "texts": "gut\nschön\nmittel\nschlecht\nnicht gut",
-    "then": "question1"
+    "texts": "  schön / mittel / schlecht",
+    "then": ["question1"]
   },
 
   "question1": {
     "type": "question",
-    "texts": {"informal" : ["Wie geht's?", "Wie war dein Tag bisher?", "Hattest du bisher einen schönen Tag?"], "standard":["Wie geht es dir?","Wie war dein Tag bisher?","Hattest du bisher einen schönen Tag?"], "formal":["Wie geht es Ihnen?", "Wie war dein Tag bisher?","Hattest du bisher einen schönen Tag?"]},
+    "texts": {"teen" : ["Wie geht's?", "Wie war dein Tag bisher?", "Hattest du bisher einen schönen Tag?"], "child":["Wie geht es dir?","Wie war dein Tag bisher?","Hattest du bisher einen schönen Tag?"], "adult":["Wie geht es Ihnen?", "Wie war dein Tag bisher?","Hattest du bisher einen schönen Tag?"]},
     "answers": [["gut", "schön"], ["mittel", "schlecht","nicht"]],
     "then": ["reaction1good", "reaction1sad"]
   },
 
   "reaction1good": {
     "type": "talk",
-    "texts": ["Das freut mich!","Das finde ich schön.","Das ist ja gut","Ein Glück!", "Das ist schön."],
-    "then": "show_user"
+    "texts": {"teen" :["Das freut mich!","Das finde ich schön.","Das ist ja gut","Ein Glück!", "Das ist schön."], "child" :["Das freut mich!","Das finde ich schön.","Das ist ja gut","Ein Glück!", "Das ist schön."],"adult" : ["Das freut mich!","Das finde ich schön.","Das ist ja gut","Ein Glück!", "Das ist schön."]},
+    "then": ["show_user"]
   },
 
   "show_user": {
     "type": "animation",
-    "filename": ["show_user"],
-    "then": "question2"
+    "filename": {"teen" : ["show_user"], "child": ["show_user"], "adult": ["show_user"]},
+    "then": ["question2"]
   },
 
   "reaction1sad": {
     "type": "talk",
-    "texts": {"informal":  ["Lass mich das ändern.", "Oh nein, das würde ich gerne ändern!", "Ich hoffe ich kann deinen Tag besser machen."], "standard":  ["Oh nein, ich hoffe ich kann das ändern!", "Ich hoffe ich kann deinen Tag besser machen.","Lass mich deinen Tag besser machen."], "formal": ["Oh nein, ich hoffe ich kann das ändern!", "Ich hoffe ich kann Ihren Tag besser machen.","Lassen Sie mich Ihren Tag besser machen."]},
-    "then": "verbeugen"
+    "texts": {"teen":  ["Lass mich das ändern.", "Oh nein, das würde ich gerne ändern!", "Ich hoffe ich kann deinen Tag besser machen."], "child":  ["Oh nein, ich hoffe ich kann das ändern!", "Ich hoffe ich kann deinen Tag besser machen.","Lass mich deinen Tag besser machen."], "adult": ["Oh nein, ich hoffe ich kann das ändern!", "Ich hoffe ich kann Ihren Tag besser machen.","Lassen Sie mich Ihren Tag besser machen."]},
+    "then": ["verbeugen"]
   },
 
   "verbeugen": {
     "type": "animation",
-    "filename": ["verbeugen"],
-    "then": "q2display"
+    "filename": {"teen" : ["verbeugen"], "child": ["verbeugen"], "adult": ["verbeugen"]},
+    "then": ["q2display"]
   },
 
   "q2display": {
     "type": "display",
     "texts": "Etwas fragen\nWas kannst du?\nAbbruch",
-    "then": "question2"
+    "then": ["question2"]
   },
 
   "question2": {
     "type": "question",
-    "texts": {"informal": ["Willst du wissen was ich kann oder was fragen?","Hast du eine Frage oder soll ich ein bisschen flexen?"],"standard":["Willst du wissen was ich tun kann oder hast du eine Frage?", "Soll ich dir bei einer Frage helfen oder ein bisschen über mich reden?"], "formal":["Wollen Sie wissen was ich tun kann oder haben Sie eine Frage?","Kann ich Ihnen bei einer Frage helfen oder soll ich mich vorstellen?"]},
-    "answers": [["Frage","helfen","Problem"],["wissen","tun","kannst"],["nein","danke","nicht"]],
-    "then": ["faq", "think", "bye"]
+    "texts": {"teen": ["Willst du wissen was ich kann oder was fragen?","Hast du eine Frage oder soll ich ein bisschen flexen?"],"child":["Willst du wissen was ich tun kann oder hast du eine Frage?", "Soll ich dir bei einer Frage helfen oder ein bisschen über mich reden?"], "adult":["Wollen Sie wissen was ich tun kann oder haben Sie eine Frage?","Kann ich Ihnen bei einer Frage helfen oder soll ich mich vorstellen?"]},
+    "answers": [["Frage","helfen","Problem"],["wissen","tun","kannst", "flexen"],["nein","danke","nicht"]],
+    "then": ["faq", "think", "byequestion"]
   },
 
   "think": {
     "type": "animation",
-    "filename": ["thinking"],
-    "then": "answer2"
+    "filename": {"teen" : ["thinking"], "child": ["thinking"], "adult": ["thinking"]},
+    "then": ["answer2"]
   },
 
   "answer2": {
     "type": "talk",
-    "texts": {"informal": "Ich kann Fragen beantworten, Spiele spielen, dir was vorführen oder über mich reden.","standard":"Ich kann Fragen beantworten, Spiele spielen, dir etwas vorführen oder über mich reden." , "formal": "Ich kann Ihnen mit Fragen helfen, Spiele spielen, Ihnen etwas vorführen oder über mich reden."},
-    "then": "present1"
+    "texts": {"teen": ["Ich kann Fragen beantworten, Spiele spielen, dir was vorführen oder über mich reden."],"child":["Ich kann Fragen beantworten, Spiele spielen, dir etwas vorführen oder über mich reden."] , "adult": ["Ich kann Ihnen mit Fragen helfen, Spiele spielen, Ihnen etwas vorführen oder über mich reden."]},
+    "then": ["present1"]
   },
 
   "present1": {
     "type": "animation",
-    "filename": ["show_self"],
-    "then": "q3display"
+    "filename": {"teen" : ["show_self"], "child": ["show_self"], "adult": ["show_self"]},
+    "then": ["q3display"]
   },
 
   "q3display": {
     "type": "display",
     "texts": "Eine Frage beantworten\nEtwas spielen\nEtwas vorführen\nSagen, wer ich bin",
-    "then": "question3"
+    "then": ["question3"]
   },
 
   "question3":{
     "type": "question",
-    "texts": {"informal": ["Was soll ich machen?","Was möchtest du dass ich mache?"],"standard": ["Was soll ich machen?","Was möchtest du dass ich mache?"],"formal": ["Was wollen Sie, dass ich tue?","Was möchten Sie, dass ich tue?","Was soll ich machen?"]},
+    "texts": {"teen": ["Was soll ich machen?","Was möchtest du dass ich mache?"],"child": ["Was soll ich machen?","Was möchtest du dass ich mache?"],"adult": ["Was wollen Sie, dass ich tue?","Was möchten Sie, dass ich tue?","Was soll ich machen?"]},
     "answers" : [["Frage","helfen"],["Spiel","spielen"],["vorführen","zeigen"],["du","was","bist"]],
     "then" : ["faqsafety", "main2safety","main3safety","main4safety"]
   },
 
   "main": {
     "type": "question",
-    "texts": {"informal": ["Willst du noch etwas machen?", "Hast du Bock noch was zu machen?","Noch was?"],"standard": ["Willst du noch etwas machen?","Hast du Zeit für noch etwas?","Kann ich dir sonst noch helfen?"],"formal": ["Wollen Sie noch etwas machen?","Haben Sie noch Zeit?","Kann ich Ihnen sonst noch helfen?"]},
+    "texts": {"teen": ["Willst du noch etwas machen?", "Hast du Bock noch was zu machen?","Noch was?"],"child": ["Willst du noch etwas machen?","Hast du Zeit für noch etwas?","Kann ich dir sonst noch helfen?"],"adult": ["Wollen Sie noch etwas machen?","Haben Sie noch Zeit?","Kann ich Ihnen sonst noch helfen?"]},
     "answers": [["ja","klar","unbedingt","natürlich","auf jeden Fall"],["nein","nö","nope"]],
-    "then": ["question3","bye"]
+    "then": ["question3","byequestion"]
   },
 
   "mdisplay": {
     "type": "display",
     "texts": "Ja, bitte!\nNein",
-    "then": "main"
+    "then": ["main"]
   },
   "wrongmain": {
     "type": "question",
-    "texts": {"informal": ["Tschuldige, was soll ich denn machen?", "Tut mir leid, was soll ich dann machen","Sorry, was dann?"],"standard": ["Entschuldigung, was soll ich denn machen?", "Tut mir leid, was soll ich machen?"],"formal": ["Entschuldigen Sie, was soll ich denn machen?", "Tut mir leid, ich lerne noch. Was soll ich machen?"]},
+    "texts": {"teen": ["Tschuldige, was soll ich denn machen?", "Tut mir leid, was soll ich dann machen","Sorry, was dann?"],"child": ["Entschuldigung, was soll ich denn machen?", "Tut mir leid, was soll ich machen?"],"adult": ["Entschuldigen Sie, was soll ich denn machen?", "Tut mir leid, ich lerne noch. Was soll ich machen?"]},
     "answers" : [["Frage","helfen"],["Spiel","spielen"],["vorführen","zeigen"],["du","was","bist"]],
     "then" : ["faqsafety", "main2safety","main3safety","main4safety"]
   },
 
   "faqsafety": {
     "type": "question",
-    "texts": {"informal": ["Ich soll dir also eine Frage beantworten?", "Du hast also eine Frage, richtig?","Du möchtest mich also etwas fragen?"],"standard": ["Ich soll dir also eine Frage beantworten?", "Du hast also eine Frage, richtig?","Du möchtest mich also etwas fragen?"],"formal": ["Ich soll Ihnen also eine Frage beantworten?", "Sie haben also eine Frage, habe ich das richtig verstanden?"," Sie möchten mich also etwas fragen, habe ich das richtig verstanden?"]},
+    "texts": {"teen": ["Ich soll dir also eine Frage beantworten?", "Du hast also eine Frage, richtig?","Du möchtest mich also etwas fragen?"],"child": ["Ich soll dir also eine Frage beantworten?", "Du hast also eine Frage, richtig?","Du möchtest mich also etwas fragen?"],"adult": ["Ich soll Ihnen also eine Frage beantworten?", "Sie haben also eine Frage, habe ich das richtig verstanden?"," Sie möchten mich also etwas fragen, habe ich das richtig verstanden?"]},
     "answers": [["ja","klar","unbedingt","natürlich","auf jeden Fall"],["nein","nö","nope","nicht"]],
-    "then": ["faq","wrongmain"]
+    "then": ["qroom","wrongmain"]
   },
+
+  "qroom": {
+    "type": "question",
+    "texts": {"teen": ["Suchst du nen Raum?"],"child": ["Bist du auf der Suche nach einem Raum?"],"adult": ["Sind Sie auf der Suche nach einem Raum?"]},
+    "answers": [["ja","danke"],["nein","nicht"]],
+    "then": ["room","faq"]
+  },
+
+  "room":{
+    "type": "action",
+    "action": "room",
+    "then": ["questionroom"]
+  },
+
+  "questionroom": {
+    "type": "question",
+    "texts": {"teen": ["Hat das geholfen?"],"child": ["Konnte ich dir helfen?","War das hilfreich für dich?"],"adult": ["Hat Ihnen das weitergeholfen?","Konnte ich Ihnen damit helfen?"]},
+    "answers": [["ja","danke"],["nein","nicht"]],
+    "then": ["main","forewarding1"]
+  },
+
   "faq":{
     "type": "action",
     "action": "faq",
-    "then": "questionfaq"
-  },
-  "questionfaq": {
-    "type": "question",
-    "texts": {"informal": "Hat das geholfen?","standard": ["Konnte ich dir helfen?","War das hilfreich für dich?"],"formal": ["Hat Ihnen das weitergeholfen?","Konnte ich Ihnen damit helfen?"]},
-    "answers": [["ja","danke"],["nein","nicht"]],
-    "then": ["main","forewarding"]
+    "then": ["main"]
   },
 
   "main2safety": {
     "type": "question",
-    "texts": {"informal": ["Ich soll also mit dir spielen?", "Du willst also was gamen?"],"standard": ["Ich soll also mit dir spielen?", "Du willst also etwas mit mir spielen oder?"],"formal": "Sie wollen also etwas spielen?"},
+    "texts": {"teen": ["Ich soll also mit dir spielen?", "Du willst also was gamen?"],"child": ["Ich soll also mit dir spielen?", "Du willst also etwas mit mir spielen oder?"],"adult": "Sie wollen also etwas spielen?"},
     "answers": [["ja","klar","unbedingt","natürlich","auf jeden Fall"],["nein","nö","nope","nicht"]],
     "then": ["main2","wrongmain"]
   },
   "main2": {
     "type": "talk",
-    "texts": {"informal": "Ich kann mit dir %s spielen.","standard": "Ich kann mit dir %s spielen.","formal": "Ich kann mit Ihnen %s spielen."},
-    "textvar": "Tik Tak Toe, Memory und Posen raten",
-    "then": "qmain2display"
+    "texts": {"teen": ["Ich kann mit dir Tik Tak Toe, Memory und Posen raten spielen."],"child": ["Ich kann mit dir Tik Tak Toe, Memory und Posen raten spielen."],"adult": ["Ich kann mit Ihnen Tik Tak Toe, Memory und Posen raten spielen."]},
+    "then": ["qmain2display"]
   },
 
   "qmain2display": {
     "type": "display",
     "texts": "Tik Tak Toe\nMemory\nPosen",
-    "then": "questionmain2"
+    "then": ["questionmain2"]
   },
 
   "questionmain2": {
     "type": "question",
-    "texts": {"informal": "Was wollen wir spielen?","standard": "Was willst du spielen?","formal": "Was wollen Sie spielen?"},
+    "texts": {"teen": ["Was wollen wir spielen?"],"child": ["Was willst du spielen?"],"adult": ["Was wollen Sie spielen?"]},
     "answers": ["Tik Tak Toe", "Memory",["Posen","raten"]],
     "then": ["tiktaktoe","memory","poses"]
   },
   "tiktaktoe": {
     "type": "action",
     "action": "tiktaktoe",
-    "then": "main"
+    "then": ["main"]
   },
   "memory": {
     "type": "action",
     "action": "memory",
-    "then": "main"
+    "then": ["main"]
   },
   "poses": {
     "type": "action",
     "action": "poses",
-    "then": "main"
+    "then": ["main"]
   },
 
   "main3safety": {
     "type": "question",
-    "texts": {"informal": ["Ich soll dir also etwas vorführen?", "Du willst also etwas vorgeführt bekommen?"],"standard": ["Ich soll dir also etwas vorführen?", "Du willst also etwas vorgeführt bekommen?"],"formal": "Sie wollen also etwas vorgeführt bekommen?"},
+    "texts": {"teen": ["Ich soll dir also etwas vorführen?", "Du willst also etwas vorgeführt bekommen?"],"child": ["Ich soll dir also etwas vorführen?", "Du willst also etwas vorgeführt bekommen?"],"adult": "Sie wollen also etwas vorgeführt bekommen?"},
     "answers": [["ja","klar","unbedingt","natürlich","auf jeden Fall"],["nein","nö","nope","nicht"]],
     "then": ["main3","wrongmain"]
   },
   "main3": {
     "type": "talk",
-    "texts": {"informal": "Ich kann einen Fistbump mit dir machen oder einen kleinen Tanz vorführen. Auf dem Display kannst du sehen was ich sonst noch kann.","standard": "Ich kann einen Fistbump mit dir machen oder einen kleinen Tanz vorführen. Auf dem Display kannst du sehen was ich sonst noch kann.","formal": "Ich kann Ihnen die Hand geben oder einen kleinen Tanz vorführen. Auf dem Display können Sie sehen was ich sonst noch kann."},
-    "then": "showscreen"
+    "texts": {"teen": ["Ich kann einen Fistbump mit dir machen oder einen kleinen Tanz vorführen. Auf dem Display kannst du sehen was ich sonst noch kann."],"child": ["Ich kann einen Fistbump mit dir machen oder einen kleinen Tanz vorführen. Auf dem Display kannst du sehen was ich sonst noch kann."],"adult": ["Ich kann Ihnen die Hand geben oder einen kleinen Tanz vorführen. Auf dem Display können Sie sehen was ich sonst noch kann."]},
+    "then": ["showscreen"]
   },
   "questionactions":{
     "type": "question",
-    "texts": {"informal":"Was willst du machen?","standard": "Was möchtest du machen?","formal": "Was möchten Sie machen?"},
+    "texts": {"teen":["Was willst du machen?"],"child": ["Was möchtest du machen?"],"adult": ["Was möchten Sie machen?"]},
     "answers": [["Hand", "schütteln"],["Faust","Fistbump", "Ghettofaust"],["verbeugen","knie nieder", "verbeug"],["Skispringer"],["winken"],["Denker"]],
     "then": ["showhandshake", "showfistbump", "showbowing", "showski", "showwave", "showthinker"]
   },
 
   "showhandshake": {
     "type": "animation",
-    "filename": ["handshake"],
-    "then": "main"
+    "filename": {"teen" : ["handshake"], "child": ["handshake"], "adult": ["handshake"]},
+    "then": ["main"]
   },
   "showfistbump": {
     "type": "animation",
-    "filename": ["fist"],
-    "then": "main"
+    "filename": {"teen" : ["fist"], "child": ["fist"], "adult": ["fist"]},
+    "then": ["main"]
   },
   "showbowing": {
     "type": "animation",
-    "filename": ["bow"],
-    "then": "main"
+    "filename": {"teen" : ["bow"], "child": ["bow"], "adult": ["bow"]},
+    "then": ["main"]
   },
   "showski": {
     "type": "animation",
-    "filename": ["skispringer"],
-    "then": "main"
+    "filename": {"teen" : ["skispringer"], "child": ["skispringer"], "adult": ["skispringer"]},
+    "then": ["main"]
   },
   "showwave": {
     "type": "animation",
-    "filename": ["wave"],
-    "then": "main"
+    "filename": {"teen" : ["wave"], "child": ["wave"], "adult": ["wave"]},
+    "then": ["main"]
   },
   "showthinker": {
     "type": "animation",
-    "filename": ["thinking"],
-    "then": "main"
+    "filename": {"teen" : ["thinking"], "child": ["thinking"], "adult": ["thinking"]},
+    "then": ["main"]
   },
 
   "main4safety": {
     "type": "question",
-    "texts": {"informal": ["Ich soll also bisschen flexen?", "Du willst also dass ich über mich quatsche?"],"standard": ["Ich soll dir also etwas über mich erzählen?", "Du willst also etwas über mich erzählt bekommen?"],"formal": ["Ich soll mich Ihnen also vorstellen?","Ich soll also mich ein wenig vorstellen richtig?"]},
+    "texts": {"teen": ["Ich soll also bisschen flexen?", "Du willst also dass ich über mich quatsche?"],"child": ["Ich soll dir also etwas über mich erzählen?", "Du willst also etwas über mich erzählt bekommen?"],"adult": ["Ich soll mich Ihnen also vorstellen?","Ich soll also mich ein wenig vorstellen richtig?"]},
     "answers": [["ja","klar","unbedingt","natürlich","auf jeden Fall"],["nein","nö","nope","nicht"]],
     "then": ["main4","wrongmain"]
   },
   "main4": {
     "type":"talk",
-    "texts": {"informal": "Ich heiße %s. Ich bin hier um die Ostsächsische Sparkasse und alle, die in die Filiale kommen, zu unterstützen und zu unterhalten. Ich kann Spiele spielen und tanzen aber ich kann auch viele häufig gestellte Fragen beantworten. Wenn ich keine Antwort weiß, dann kann ich dir sagen, wer dir weiterhelfen kann. Außerdem können wir uns unterhalten und ich kann mit dir interagieren. Durch meine einfache Oberfläche kann ich jeden Tag verbessert werden. Es kann also gut sein, dass ich das nächste Mal, dass du hier bist noch mehr kann. Auf dem Display kannst du sehen was ich alles kann.","standard": "Ich heiße %s. Ich bin hier um die Ostsächsische Sparkasse und alle, die in die Filiale kommen, zu unterstützen und zu unterhalten. Ich kann Spiele spielen und tanzen aber ich kann auch viele häufig gestellte Fragen beantworten. Wenn ich keine Antwort weiß, dann kann ich dir sagen, wer dir weiterhelfen kann. Außerdem können wir uns unterhalten und ich kann mit dir interagieren. Durch meine einfache Oberfläche kann ich jeden Tag verbessert werden. Es kann also gut sein, dass ich das nächste Mal, dass du hier bist noch mehr kann. Auf dem Display kannst du sehen was ich alles kann.","formal": "Ich heiße %s. Ich bin hier um die Ostsächsische Sparkasse und alle, die in die Filiale kommen, zu unterstützen und zu unterhalten. Ich kann Spiele spielen und tanzen aber ich kann auch viele häufig gestellte Fragen beantworten. Wenn ich keine Antwort weiß, dann kann ich Ihnen sagen, wer Ihnen weiterhelfen kann. Außerdem können wir uns unterhalten und ich kann mit Ihnen interagieren. Durch meine einfache Oberfläche kann ich jeden Tag verbessert werden. Es kann also gut sein, dass ich das nächste Mal, dass Sie hier sind noch mehr kann. Auf dem Display können Sie sehen was ich alles kann."},
-    "textvar": "Alpha",
-    "then": "showscreen"
+    "texts": {"teen": ["Ich heiße Alpha. Ich bin hier um die Ostsächsische Sparkasse und alle, die in die Filiale kommen, zu unterstützen und zu unterhalten. Ich kann Spiele spielen und tanzen aber ich kann auch viele häufig gestellte Fragen beantworten. Wenn ich keine Antwort weiß, dann kann ich dir sagen, wer dir weiterhelfen kann. Außerdem können wir uns unterhalten und ich kann mit dir interagieren. Durch meine einfache Oberfläche kann ich jeden Tag verbessert werden. Es kann also gut sein, dass ich das nächste Mal, dass du hier bist noch mehr kann. Auf dem Display kannst du sehen was ich alles kann."],"child": ["Ich heiße Alpha. Ich bin hier um die Ostsächsische Sparkasse und alle, die in die Filiale kommen, zu unterstützen und zu unterhalten. Ich kann Spiele spielen und tanzen aber ich kann auch viele häufig gestellte Fragen beantworten. Wenn ich keine Antwort weiß, dann kann ich dir sagen, wer dir weiterhelfen kann. Außerdem können wir uns unterhalten und ich kann mit dir interagieren. Durch meine einfache Oberfläche kann ich jeden Tag verbessert werden. Es kann also gut sein, dass ich das nächste Mal, dass du hier bist noch mehr kann. Auf dem Display kannst du sehen was ich alles kann."],"adult": ["Ich heiße Alpha. Ich bin hier um die Ostsächsische Sparkasse und alle, die in die Filiale kommen, zu unterstützen und zu unterhalten. Ich kann Spiele spielen und tanzen aber ich kann auch viele häufig gestellte Fragen beantworten. Wenn ich keine Antwort weiß, dann kann ich Ihnen sagen, wer Ihnen weiterhelfen kann. Außerdem können wir uns unterhalten und ich kann mit Ihnen interagieren. Durch meine einfache Oberfläche kann ich jeden Tag verbessert werden. Es kann also gut sein, dass ich das nächste Mal, dass Sie hier sind noch mehr kann. Auf dem Display können Sie sehen was ich alles kann."]},
+    "then": ["showscreen"]
   },
 
+  "byequestion": {
+    "type": "question",
+    "texts": {"teen":["Hast du Bock, noch kurz ne Umfrage zu machen?"],"child": ["Hast du Interesse noch kurz an einer Umfrage teilzunehmen?"],"adult": ["Hätten Sie Interesse, noch an einer Umfrage teilzunehmen?"]},
+    "answers": [["ja","klar","unbedingt","natürlich","auf jeden Fall"],["nein","nö","nope","nicht"]],
+    "then": ["survey", "bye"]
+  },
+  "survey": {
+    "type": "action",
+    "action": "survey",
+    "then": ["bye"]
+  },
   "bye": {
     "type": "talk",
-    "texts": {"informal":["Tschau, ich hoffe ich konnte helfen.","Tschüss, ich hoffe du chillst mal wieder hier.","Hoffe ich konnte helfen","Schönen Tag noch"],"standard": ["Ich hoffe du hast noch einen schönen Tag.","Tschüss, ich hoffe ich konte dir helfen.","Tschüss, hoffentlich konnte ich helfen","Ich hoffe ich habe dir weitergeholfen."],"formal": ["Auf Wiedersehen, ich hoffe ich konnte Ihnen weiterhelfen.","Ich hoffe ich habe Ihnen geholfen.","Ich wünsche Ihnen noch einen schönen Tag","Auf Wiedersehen, hoffentlich konnte ich Ihnen helfen."]},
-    "then": "animationbye"
+    "texts": {"teen":["Tschau, ich hoffe ich konnte helfen.","Tschüss, ich hoffe du chillst mal wieder hier.","Hoffe ich konnte helfen","Schönen Tag noch"],"child": ["Ich hoffe du hast noch einen schönen Tag.","Tschüss, ich hoffe ich konte dir helfen.","Tschüss, hoffentlich konnte ich helfen","Ich hoffe ich habe dir weitergeholfen."],"adult": ["Auf Wiedersehen, ich hoffe ich konnte Ihnen weiterhelfen.","Ich hoffe ich habe Ihnen geholfen.","Ich wünsche Ihnen noch einen schönen Tag","Auf Wiedersehen, hoffentlich konnte ich Ihnen helfen."]},
+    "then": ["animationbye"]
   },
 
   "animationbye": {
     "type": "animation",
-    "filename": ["wave","verbeugen", "bow"],
-    "then": "standby"
+    "filename": {"teen" : ["wave", "verbeugen", "bow"], "child": ["wave", "verbeugen", "bow"], "adult": ["bow"]},
+    "then": ["standby"]
   },
 
   "help": {
     "type": "question",
-    "texts": {"informal":"Willst du, dass ich dich zu einem Mitarbeiter weiterleite oder soll ich dir selbst eine Frage beantworten?","standard": "Möchtest du, dass ich dich zu einem Mitarbeiter weiterleite oder soll ich dir selbst eine Frage beantworten?","formal": "Wollen Sie, dass ich Sie zu einem Mitarbeiter weiterleite oder soll ich Ihnen selbst eine Frage beantworten?"},
+    "texts": {"teen":["Willst du, dass ich dich zu einem Mitarbeiter weiterleite oder soll ich dir selbst eine Frage beantworten?"],"child": ["Möchtest du, dass ich dich zu einem Mitarbeiter weiterleite oder soll ich dir selbst eine Frage beantworten?"],"adult": ["Wollen Sie, dass ich Sie zu einem Mitarbeiter weiterleite oder soll ich Ihnen selbst eine Frage beantworten?"]},
     "answers": [["Mitarbeiter", "weiterleiten","leiten"],["Frage", "selbst","beantworten"]],
     "then": ["forwarding","faq"]
   },
@@ -254,36 +277,36 @@
   "forwarding1": {
     "type": "display",
     "texts": "hier muss die Sparkasse Ihre Themengebiete eintragen",
-    "then": "forwarding2"
+    "then": ["forwarding2"]
   },
   "forwarding2":{
     "type": "question",
-    "texts": {"informal":"Bitte sag mir zu welchem Themengebiet deine Frage gehört.","standard": "Bitte sage mir zu welchem Themengebiet deine Frage gehört.","formal": "Bitte sagen Sie zu welchem Themengebiet Ihre Frage gehört."},
+    "texts": {"teen":["Bitte sag mir zu welchem Themengebiet deine Frage gehört."],"child": ["Bitte sage mir zu welchem Themengebiet deine Frage gehört."],"adult": ["Bitte sagen Sie zu welchem Themengebiet Ihre Frage gehört."]},
     "answers": ["hier muss die Sparkasse Ihre Themengebiete eintragen"],
     "then": ["hier muss für jedes Themengebiet der zugehörige Mitarbeiter durch mitarbeitername ausgegeben werden"]
   },
   "mitarbeitername": {
     "type": "display",
     "texts": "Franz Mustermann, Etage 3, Raum 402",
-    "then": "main"
+    "then": ["main"]
   },
 
   "showallactions": {
     "type": "display",
-    "texts": "Ich kann deine Hand schütteln, dir einen Fistbump geben, mich verbeugen, einen Skispringer imitieren, dir winken und wie ein Denker posieren. ",
-    "then": "questionactions"
+    "texts": ["Ich kann deine Hand schütteln, dir einen Fistbump geben, mich verbeugen, einen Skispringer imitieren, dir winken und wie ein Denker posieren. "],
+    "then": ["questionactions"]
   },
 
   "waitfortouch": {
     "type": "eventwait",
     "event": "Head/Touch",
-    "then": "start"
+    "then": ["start"]
   },
 
   "standby":{
     "type": "action",
     "action": "standby",
-    "then": "start"
+    "then": ["start"]
   }
 
 }
