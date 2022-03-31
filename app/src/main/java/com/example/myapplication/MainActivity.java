@@ -562,7 +562,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 frequencies.add(freq * questions.length()); // correction with number of questions
             }
 
-            rated_questions = rating(questions, weighted_keysums, frequencies);
+            rated_questions = rating(weighted_keysums, frequencies);
 
         } catch (JSONException e) {
             Log.e("MYAPP", "unexpected JSON exception", e);
