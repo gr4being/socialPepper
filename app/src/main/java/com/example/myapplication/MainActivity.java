@@ -746,7 +746,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         }
     }
 
-    /*public void faq(QiContext qiContext) {
+    public void faq(QiContext qiContext) {
         JSONArray keywords = null;
         try {
             keywords = questionsObj.getJSONArray("keywords");
@@ -879,6 +879,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             next = (another_int==1)? "faq" : "";
 
         } while (another);
-    }*/
+    }
 }
 
