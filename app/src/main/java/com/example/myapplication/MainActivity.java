@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.view.View;
 import android.widget.Button;
@@ -155,10 +156,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         .withHuman(human)
                         .build();
 
-
-
-
-
                 approachHuman.async().run();
                 EngageHuman engageHuman = EngageHumanBuilder.with(qiContext)
                         .withHuman(human)
@@ -207,14 +204,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 Log.i("aa", "button question 4 clicked");
                 say_async(qiContext, a_ar[3]);
                 changeText(a_ar[3]);
-            }
-        });
-        Button question_button_5 = (Button) findViewById(R.id.btn_question_5);
-        question_button_5.setOnClickListener(new View.OnClickListener() {
-            public void onClick (View view) {
-                Log.i("aa", "button question 5 clicked");
-                say_async(qiContext, a_ar[4]);
-                changeText(a_ar[4]);
             }
         });
         Button back_button = (Button) findViewById(R.id.btn_back);
@@ -301,6 +290,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         }
     }
 
+
     public void standby() {
         // run random animations
 
@@ -348,8 +338,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         c.setVisibility(View.INVISIBLE);
         View d = findViewById(R.id.btn_question_4);
         d.setVisibility(View.INVISIBLE);
-        View e = findViewById(R.id.btn_question_5);
-        e.setVisibility(View.INVISIBLE);
 
         changeText(displayText);
     }
@@ -758,7 +746,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         }
     }
 
-    public void faq(QiContext qiContext) {
+    /*public void faq(QiContext qiContext) {
         JSONArray keywords = null;
         try {
             keywords = questionsObj.getJSONArray("keywords");
@@ -891,6 +879,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             next = (another_int==1)? "faq" : "";
 
         } while (another);
-    }
+    }*/
 }
 
