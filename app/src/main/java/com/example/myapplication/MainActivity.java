@@ -69,23 +69,21 @@ import java.util.Random;
 
 public class MainActivity extends RobotActivity implements RobotLifecycleCallbacks {
 
-    private Activity mainActivity;
-    public String[] a_ar = new String[]{};
-    private boolean wait = false;
+    Activity mainActivity;
+    String[] a_ar = new String[]{};
+    Boolean wait = false;
 
     JSONObject questionsObj = null;
-    private TouchSensor headTouchSensor;
+    TouchSensor headTouchSensor;
     JSONObject dialogsObj = null;
     String jsonString = null;
     Boolean humanEnganged = false;
+    Profile profile = null;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         QiSDK.register(this, this);
         mainActivity=this;
-
-        String[] ar = new String[]{"a", "b", "c", "d", "e"};
-        a_ar = new String[]{"no", "yes", "etc", "idgaf", "sure m8"};
 
         setContentView(R.layout.activity_main); //setzt die Anzeigefläche: res->layout->activity_main.xml
 
@@ -105,13 +103,33 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         super.onDestroy();
     }
 
+    private void say_async(QiContext qiContext, String text){
+        Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
+        Log.i("aa", "say async");
+
+        Phrase phrase = new Phrase(text);
+        Future<Say> sayBuilding = SayBuilder.with(qiContext)
+                .withPhrase(phrase)
+                .withLocale(locale)
+                .buildAsync();
+        Future<Void> sayActionFuture = sayBuilding.andThenCompose(say_async -> say_async.async().run());
+    }
+
+    public void say_sync(QiContext qiContext, String text){
+        Log.i("aa", "say sinc ");
+
+        Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
+        Phrase phrase = new Phrase(text);
+        Say sayActionFuture = SayBuilder.with(qiContext)
+                .withPhrase(phrase)
+                .withLocale(locale)
+                .build();
+        sayActionFuture.run();
+    }
+
     public void onRobotFocusGained(QiContext qiContext) {
-        Touch touch = qiContext.getTouch();
-        headTouchSensor = touch.getSensor("Head/Touch");
-        headTouchSensor.addOnStateChangedListener(touchState -> {
-            Log.i("ttt", "Sensor " + (touchState.getTouched() ? "touched" : "released") + " at " + touchState.getTime());
-            wait = false;
-        });
+        Log.i("aa", "focus gained");
+
 
         try {
             InputStream is = getApplicationContext().getAssets().open("robot/questions.json");
@@ -144,32 +162,58 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             e.printStackTrace();
         }
 
-        HumanAwareness humanAwareness = qiContext.getHumanAwareness();
+        Touch touch = qiContext.getTouch();
+        headTouchSensor = touch.getSensor("Head/Touch");
+        headTouchSensor.addOnStateChangedListener(touchState -> {
+            if (touchState.getTouched()) {
+                humanEnganged = true;
+                HumanAwareness humanAwareness = qiContext.getHumanAwareness();
+                Human human = humanAwareness.getRecommendedHumanToApproach();
+
+                profile = new Profile();
+                profile.age = human.getEstimatedAge().getYears();
+                conversation(qiContext, profile);
+            }
+            Log.i("ttt", "Sensor " + (touchState.getTouched() ? "touched" : "released") + " at " + touchState.getTime());
+            wait = false;
+        });
+        //eventwait();
+
+        /*HumanAwareness humanAwareness = qiContext.getHumanAwareness();
         humanAwareness.addOnEngagedHumanChangedListener(human -> {
             if (human != null) {
+                say_async(qiContext, "ich sehe dich");
                 humanEnganged = true;
+
+
                 // Human recommendedHuman = humanAwareness.getRecommendedHumanToApproach();
+                say_async(qiContext, "ich sehe jemanden");
                 ApproachHuman approachHuman = ApproachHumanBuilder.with(qiContext)
                         .withHuman(human)
                         .build();
-
+                say_async(qiContext, "ich sehe es");
                 approachHuman.async().run();
+                say_async(qiContext, "ich sehe run");
                 EngageHuman engageHuman = EngageHumanBuilder.with(qiContext)
                         .withHuman(human)
                         .build();
                 engageHuman.async().run();
+
+                say_async(qiContext, "ich sehe etwas");
                 engageHuman.addOnHumanIsDisengagingListener(() -> {
                     say_sync(qiContext, "Tschüss!");
                     //engagement.requestCancellation();
                 });
+
                 Profile profile = new Profile();
-                profile.age = human.getEstimatedAge().getYears();
+                //profile.age = human.getEstimatedAge().getYears();
+                say_async(qiContext, "ich sehe mich");
                 conversation(qiContext, profile);
             } else {
                 humanEnganged = false;
                 standby(qiContext);
             }
-        });
+        });*/
 
         Button question_button_1 = (Button) findViewById(R.id.btn_question_1);
         question_button_1.setOnClickListener(new View.OnClickListener() {
@@ -177,6 +221,13 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 Log.i("aa", "button question 1 clicked");
                 say_async(qiContext, a_ar[0]);
                 changeText(a_ar[0]);
+            }
+        });
+        Button test = (Button) findViewById(R.id.btn_test);
+        test.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                Log.i("aa", "button question 1 clicked");
+                say_async(qiContext, "asdasfgasdjhg");
             }
         });
         Button question_button_2 = (Button) findViewById(R.id.btn_question_2);
@@ -213,9 +264,12 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             }
         });
     }
+
     String next;
 
     public void conversation (QiContext qiContext, Profile profile) {
+        say_sync(qiContext, "Wir reden jezt");
+
 
         // get dialogs from file
         next = "start";
@@ -229,15 +283,26 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         String displaytext;
         String action;
         Boolean conversation_finished = false;
+        say_sync(qiContext, "Wir reden nun");
         while (!conversation_finished) {
             try {
+                say_sync(qiContext, "Wir reden");
+                say_sync(qiContext, next);
+
                 JSONObject actionObj = (JSONObject) dialogsObj.get(next);
 
+
                 then = actionObj.getJSONArray("then");
+                say_sync(qiContext, "then");
                 next = then.getString(0);
-                type = (String) actionObj.get("type");
+                say_sync(qiContext, "next");
+                type = actionObj.getString("type");
+                say_sync(qiContext, "type");
+                say_sync(qiContext, type);
+
                 switch (type) {
                     case "talk":
+                        say_sync(qiContext, "Wir talken nun");
                         texts = (JSONObject) actionObj.get("texts");
                         text = (String) texts.get(profile.formality());
                         say_sync(qiContext, text);
@@ -245,6 +310,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                     case "question":
                         texts = (JSONObject) actionObj.get("texts");
                         text = (String) texts.get(profile.formality());
+
                         answers = (JSONArray) actionObj.get("answers");
                         int index = question(qiContext, text, answers);
                         next = then.getString(index);
@@ -264,7 +330,8 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                             case "faq":
                                 faq(qiContext);
                                 break;
-                            case "tictactoe":
+                            case "standby":
+                                standby(qiContext);
                                 //tictacttoe(); never gonna happen
                                 break;
                             default:
@@ -286,10 +353,12 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     }
 
     public void standby(QiContext qiContext) {
-        String[] standbyAnimations = {"stand1", "stand2", "stand3"};
-        int rnd = new Random().nextInt(standbyAnimations.length);
-        animation(qiContext, standbyAnimations[rnd]);
 
+        String[] standbyAnimations = {"stand1", "stand2", "stand3"};
+        while (!humanEnganged) {
+            int rnd = new Random().nextInt(standbyAnimations.length);
+            animation(qiContext, standbyAnimations[rnd]);
+        }
     }
 
     public void onRobotFocusLost() {
@@ -335,25 +404,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         return index;
     }
 
-    private void say_async(QiContext qiContext, String text){
-        Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
-        Phrase phrase = new Phrase(text);
-        Future<Say> sayBuilding = SayBuilder.with(qiContext)
-                .withPhrase(phrase)
-                .withLocale(locale)
-                .buildAsync();
-        Future<Void> sayActionFuture = sayBuilding.andThenCompose(say_async -> say_async.async().run());
-    }
 
-    public void say_sync(QiContext qiContext, String text){
-        Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
-        Phrase phrase = new Phrase(text);
-        Say sayActionFuture = SayBuilder.with(qiContext)
-                .withPhrase(phrase)
-                .withLocale(locale)
-                .build();
-        sayActionFuture.run();
-    }
 
     private void changeText(String text){
         TextView textView  = findViewById(R.id.mytextview_id);

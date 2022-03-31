@@ -3,18 +3,18 @@
     "type": "talk",
     "texts": {"informal":["Hi, ich bin %s.", "Ich heiße %s","Hi, %s der Name."], "standard":["Hallo, ich heiße %s.","Hallo, ich bin %s"], "formal":["Guten Tag, ich heiße %s.","Guten Tag, ich bin %s."]},
     "textvar" : "Alpha",
-    "then": "greet"
+    "then": ["greet"]
   },
   "greet": {
     "type": "animation",
     "filename": {"informal":"fist", "standard":"wave", "formal":"handshake"},
-    "then": "q1display"
+    "then": ["q1display"]
   },
 
   "q1display": {
     "type": "display",
     "texts": "gut\nschön\nmittel\nschlecht\nnicht gut",
-    "then": "question1"
+    "then": ["question1"]
   },
 
   "question1": {
@@ -27,31 +27,31 @@
   "reaction1good": {
     "type": "talk",
     "texts": ["Das freut mich!","Das finde ich schön.","Das ist ja gut","Ein Glück!", "Das ist schön."],
-    "then": "show_user"
+    "then": ["show_user"]
   },
 
   "show_user": {
     "type": "animation",
     "filename": ["show_user"],
-    "then": "question2"
+    "then": ["question2"]
   },
 
   "reaction1sad": {
     "type": "talk",
     "texts": {"informal":  ["Lass mich das ändern.", "Oh nein, das würde ich gerne ändern!", "Ich hoffe ich kann deinen Tag besser machen."], "standard":  ["Oh nein, ich hoffe ich kann das ändern!", "Ich hoffe ich kann deinen Tag besser machen.","Lass mich deinen Tag besser machen."], "formal": ["Oh nein, ich hoffe ich kann das ändern!", "Ich hoffe ich kann Ihren Tag besser machen.","Lassen Sie mich Ihren Tag besser machen."]},
-    "then": "verbeugen"
+    "then": ["verbeugen"]
   },
 
   "verbeugen": {
     "type": "animation",
     "filename": ["verbeugen"],
-    "then": "q2display"
+    "then": ["q2display"]
   },
 
   "q2display": {
     "type": "display",
     "texts": "Etwas fragen\nWas kannst du?\nAbbruch",
-    "then": "question2"
+    "then": ["question2"]
   },
 
   "question2": {
@@ -64,25 +64,25 @@
   "think": {
     "type": "animation",
     "filename": ["thinking"],
-    "then": "answer2"
+    "then": ["answer2"]
   },
 
   "answer2": {
     "type": "talk",
     "texts": {"informal": "Ich kann Fragen beantworten, Spiele spielen, dir was vorführen oder über mich reden.","standard":"Ich kann Fragen beantworten, Spiele spielen, dir etwas vorführen oder über mich reden." , "formal": "Ich kann Ihnen mit Fragen helfen, Spiele spielen, Ihnen etwas vorführen oder über mich reden."},
-    "then": "present1"
+    "then": ["present1"]
   },
 
   "present1": {
     "type": "animation",
     "filename": ["show_self"],
-    "then": "q3display"
+    "then": ["q3display"]
   },
 
   "q3display": {
     "type": "display",
     "texts": "Eine Frage beantworten\nEtwas spielen\nEtwas vorführen\nSagen, wer ich bin",
-    "then": "question3"
+    "then": ["question3"]
   },
 
   "question3":{
@@ -102,7 +102,7 @@
   "mdisplay": {
     "type": "display",
     "texts": "Ja, bitte!\nNein",
-    "then": "main"
+    "then": ["main"]
   },
   "wrongmain": {
     "type": "question",
@@ -120,7 +120,7 @@
   "faq":{
     "type": "action",
     "action": "faq",
-    "then": "questionfaq"
+    "then": ["questionfaq"]
   },
   "questionfaq": {
     "type": "question",
@@ -139,13 +139,13 @@
     "type": "talk",
     "texts": {"informal": "Ich kann mit dir %s spielen.","standard": "Ich kann mit dir %s spielen.","formal": "Ich kann mit Ihnen %s spielen."},
     "textvar": "Tik Tak Toe, Memory und Posen raten",
-    "then": "qmain2display"
+    "then": ["qmain2display"]
   },
 
   "qmain2display": {
     "type": "display",
     "texts": "Tik Tak Toe\nMemory\nPosen",
-    "then": "questionmain2"
+    "then": ["questionmain2"]
   },
 
   "questionmain2": {
@@ -157,17 +157,17 @@
   "tiktaktoe": {
     "type": "action",
     "action": "tiktaktoe",
-    "then": "main"
+    "then": ["main"]
   },
   "memory": {
     "type": "action",
     "action": "memory",
-    "then": "main"
+    "then": ["main"]
   },
   "poses": {
     "type": "action",
     "action": "poses",
-    "then": "main"
+    "then": ["main"]
   },
 
   "main3safety": {
@@ -179,7 +179,7 @@
   "main3": {
     "type": "talk",
     "texts": {"informal": "Ich kann einen Fistbump mit dir machen oder einen kleinen Tanz vorführen. Auf dem Display kannst du sehen was ich sonst noch kann.","standard": "Ich kann einen Fistbump mit dir machen oder einen kleinen Tanz vorführen. Auf dem Display kannst du sehen was ich sonst noch kann.","formal": "Ich kann Ihnen die Hand geben oder einen kleinen Tanz vorführen. Auf dem Display können Sie sehen was ich sonst noch kann."},
-    "then": "showscreen"
+    "then": ["showscreen"]
   },
   "questionactions":{
     "type": "question",
@@ -191,32 +191,32 @@
   "showhandshake": {
     "type": "animation",
     "filename": ["handshake"],
-    "then": "main"
+    "then": ["main"]
   },
   "showfistbump": {
     "type": "animation",
     "filename": ["fist"],
-    "then": "main"
+    "then": ["main"]
   },
   "showbowing": {
     "type": "animation",
     "filename": ["bow"],
-    "then": "main"
+    "then": ["main"]
   },
   "showski": {
     "type": "animation",
     "filename": ["skispringer"],
-    "then": "main"
+    "then": ["main"]
   },
   "showwave": {
     "type": "animation",
     "filename": ["wave"],
-    "then": "main"
+    "then": ["main"]
   },
   "showthinker": {
     "type": "animation",
     "filename": ["thinking"],
-    "then": "main"
+    "then": ["main"]
   },
 
   "main4safety": {
@@ -229,19 +229,19 @@
     "type":"talk",
     "texts": {"informal": "Ich heiße %s. Ich bin hier um die Ostsächsische Sparkasse und alle, die in die Filiale kommen, zu unterstützen und zu unterhalten. Ich kann Spiele spielen und tanzen aber ich kann auch viele häufig gestellte Fragen beantworten. Wenn ich keine Antwort weiß, dann kann ich dir sagen, wer dir weiterhelfen kann. Außerdem können wir uns unterhalten und ich kann mit dir interagieren. Durch meine einfache Oberfläche kann ich jeden Tag verbessert werden. Es kann also gut sein, dass ich das nächste Mal, dass du hier bist noch mehr kann. Auf dem Display kannst du sehen was ich alles kann.","standard": "Ich heiße %s. Ich bin hier um die Ostsächsische Sparkasse und alle, die in die Filiale kommen, zu unterstützen und zu unterhalten. Ich kann Spiele spielen und tanzen aber ich kann auch viele häufig gestellte Fragen beantworten. Wenn ich keine Antwort weiß, dann kann ich dir sagen, wer dir weiterhelfen kann. Außerdem können wir uns unterhalten und ich kann mit dir interagieren. Durch meine einfache Oberfläche kann ich jeden Tag verbessert werden. Es kann also gut sein, dass ich das nächste Mal, dass du hier bist noch mehr kann. Auf dem Display kannst du sehen was ich alles kann.","formal": "Ich heiße %s. Ich bin hier um die Ostsächsische Sparkasse und alle, die in die Filiale kommen, zu unterstützen und zu unterhalten. Ich kann Spiele spielen und tanzen aber ich kann auch viele häufig gestellte Fragen beantworten. Wenn ich keine Antwort weiß, dann kann ich Ihnen sagen, wer Ihnen weiterhelfen kann. Außerdem können wir uns unterhalten und ich kann mit Ihnen interagieren. Durch meine einfache Oberfläche kann ich jeden Tag verbessert werden. Es kann also gut sein, dass ich das nächste Mal, dass Sie hier sind noch mehr kann. Auf dem Display können Sie sehen was ich alles kann."},
     "textvar": "Alpha",
-    "then": "showscreen"
+    "then": ["showscreen"]
   },
 
   "bye": {
     "type": "talk",
     "texts": {"informal":["Tschau, ich hoffe ich konnte helfen.","Tschüss, ich hoffe du chillst mal wieder hier.","Hoffe ich konnte helfen","Schönen Tag noch"],"standard": ["Ich hoffe du hast noch einen schönen Tag.","Tschüss, ich hoffe ich konte dir helfen.","Tschüss, hoffentlich konnte ich helfen","Ich hoffe ich habe dir weitergeholfen."],"formal": ["Auf Wiedersehen, ich hoffe ich konnte Ihnen weiterhelfen.","Ich hoffe ich habe Ihnen geholfen.","Ich wünsche Ihnen noch einen schönen Tag","Auf Wiedersehen, hoffentlich konnte ich Ihnen helfen."]},
-    "then": "animationbye"
+    "then": ["animationbye"]
   },
 
   "animationbye": {
     "type": "animation",
     "filename": ["wave","verbeugen", "bow"],
-    "then": "standby"
+    "then": ["standby"]
   },
 
   "help": {
@@ -254,7 +254,7 @@
   "forwarding1": {
     "type": "display",
     "texts": "hier muss die Sparkasse Ihre Themengebiete eintragen",
-    "then": "forwarding2"
+    "then": ["forwarding2"]
   },
   "forwarding2":{
     "type": "question",
@@ -265,25 +265,25 @@
   "mitarbeitername": {
     "type": "display",
     "texts": "Franz Mustermann, Etage 3, Raum 402",
-    "then": "main"
+    "then": ["main"]
   },
 
   "showallactions": {
     "type": "display",
     "texts": "Ich kann deine Hand schütteln, dir einen Fistbump geben, mich verbeugen, einen Skispringer imitieren, dir winken und wie ein Denker posieren. ",
-    "then": "questionactions"
+    "then": ["questionactions"]
   },
 
   "waitfortouch": {
     "type": "eventwait",
     "event": "Head/Touch",
-    "then": "start"
+    "then": ["start"]
   },
 
   "standby":{
     "type": "action",
     "action": "standby",
-    "then": "start"
+    "then": ["start"]
   }
 
 }
