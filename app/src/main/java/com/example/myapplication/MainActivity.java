@@ -254,8 +254,8 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         animation(qiContext, animationfiles.getString(profile.formality()));
                         break;
                     case "display":
-                        displaytexts = (JSONObject) actionObj.get("texts");
-                        displaytext = (String) displaytexts.get(profile.formality());
+                        displaytext = (String) actionObj.getString("texts");
+                        //displaytext = (String) displaytexts.get(profile.formality());
                         display(qiContext, displaytext);
                         break;
                     case "action":
@@ -301,25 +301,21 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     }
 
     public int question(QiContext qiContext,String text,JSONArray answers ) {
-
-        String[][] words = {};
-        int index =0;
         say_async(qiContext,text);
-
+        int index = 0;
+        ArrayList<String[]> words = new ArrayList<String[]>();
         for(int i=0;i<answers.length();i++){
             try {
-                words[i] = (String[]) answers.get(i);
+                words.add((String[]) answers.get(i));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
         List<PhraseSet> keywordsAsSets = new ArrayList<PhraseSet>();
         for (int k=0; k<answers.length(); k++) {
-
             keywordsAsSets.add(PhraseSetBuilder.with(qiContext)
-                    .withTexts(words[k])
+                    .withTexts(words.get(k))
                     .build());
-
         }
         Listen listen = ListenBuilder.with(qiContext)
                 .withPhraseSets(keywordsAsSets)
@@ -327,7 +323,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         ListenResult listenResult = listen.run();
 
         PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
-        int[] heard_keys = new int[answers.length()];
+        //int[] heard_keys = new int[answers.length()];
         for (int i = 0; i < answers.length(); i++) {
             if (matchedPhraseSet.equals(keywordsAsSets.get(i))) {
                 index = i; //momentan ist es nur möglich, dass ein einzelnes Keyword erkannt wird.
@@ -338,7 +334,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         }
         return index;
     }
-
 
     private void say_async(QiContext qiContext, String text){
         Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
