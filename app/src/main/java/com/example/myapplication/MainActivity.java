@@ -196,10 +196,9 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         back_button.setOnClickListener(new View.OnClickListener() {
             public void onClick (View view) {
                 Log.i("aa", "back clicked");
-                JSONParser parser = new JSONParser();
-                JSONObject dialogsObj = (JSONObject) parser.parse(new FileReader("./dialogs.json"));
-                JSONObject action = dialogsObj.getJSONObject(next);
-                next = action.getString("before");
+                JSONObject action = null;
+                try { action = dialogsObj.getJSONObject(next); } catch (JSONException e) { e.printStackTrace(); }
+                try { next = action.getString("before"); } catch (JSONException e) { e.printStackTrace(); }
             }
         });
     }
