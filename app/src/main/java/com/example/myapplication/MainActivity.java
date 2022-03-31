@@ -9,14 +9,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ImageView;
 import android.widget.Switch;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import org.json.JSONException;
-import org.json.simple.parser.JSONParser;
 
 
 import java.io.FileNotFoundException;
@@ -62,7 +60,6 @@ import com.aldebaran.qi.sdk.util.PhraseSetUtil;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.simple.parser.ParseException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -170,7 +167,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 conversation(qiContext, profile);
             } else {
                 humanEnganged = false;
-                standby();
+                standby(qiContext);
             }
         });
 
@@ -221,13 +218,12 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     public void conversation (QiContext qiContext, Profile profile) {
 
         // get dialogs from file
-        JSONParser parser = new JSONParser();
         next = "start";
         String type;
+        JSONArray then;
         String text;
         String event;
         JSONArray answers;
-        JSONArray animationfiles;
         JSONObject texts;
         JSONObject displaytexts;
         String displaytext;
@@ -236,7 +232,9 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         while (!conversation_finished) {
             try {
                 JSONObject actionObj = (JSONObject) dialogsObj.get(next);
-                next = (String) actionObj.get("then");
+
+                then = actionObj.getJSONArray("then");
+                next = then.getString(0);
                 type = (String) actionObj.get("type");
                 switch (type) {
                     case "talk":
@@ -248,11 +246,12 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         texts = (JSONObject) actionObj.get("texts");
                         text = (String) texts.get(profile.formality());
                         answers = (JSONArray) actionObj.get("answers");
-                        question(qiContext, text, answers);
+                        int index = question(qiContext, text, answers);
+                        next = then.getString(index);
                         break;
                     case "animation":
-                        animationfiles = (JSONArray) actionObj.get("filename");
-                        animation(qiContext, animationfiles);
+                        JSONObject animationfiles = (JSONObject) actionObj.get("filename");
+                        animation(qiContext, animationfiles.getString(profile.formality()));
                         break;
                     case "display":
                         displaytexts = (JSONObject) actionObj.get("texts");
@@ -280,19 +279,16 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         say_sync(qiContext, "es scheint so als wäre ein Problem aufgetreten");
                         break;
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ParseException e) {
-                e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     }
 
-
-    public void standby() {
-        // run random animations
+    public void standby(QiContext qiContext) {
+        String[] standbyAnimations = {"stand1", "stand2", "stand3"};
+        int rnd = new Random().nextInt(standbyAnimations.length);
+        animation(qiContext, standbyAnimations[rnd]);
 
     }
 
@@ -303,6 +299,46 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     public void onRobotFocusRefused(String reason){
             // The robot focus is refused.
     }
+
+    public int question(QiContext qiContext,String text,JSONArray answers ) {
+
+        String[][] words = {};
+        int index =0;
+        say_async(qiContext,text);
+
+        for(int i=0;i<answers.length();i++){
+            try {
+                words[i] = (String[]) answers.get(i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        List<PhraseSet> keywordsAsSets = new ArrayList<PhraseSet>();
+        for (int k=0; k<answers.length(); k++) {
+
+            keywordsAsSets.add(PhraseSetBuilder.with(qiContext)
+                    .withTexts(words[k])
+                    .build());
+
+        }
+        Listen listen = ListenBuilder.with(qiContext)
+                .withPhraseSets(keywordsAsSets)
+                .build();
+        ListenResult listenResult = listen.run();
+
+        PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
+        int[] heard_keys = new int[answers.length()];
+        for (int i = 0; i < answers.length(); i++) {
+            if (matchedPhraseSet.equals(keywordsAsSets.get(i))) {
+                index = i; //momentan ist es nur möglich, dass ein einzelnes Keyword erkannt wird.
+                //mit einem anderen Sprachinterpreten könnten mehrere Keywörter erkannt werden und
+            } else {
+                index = 0;
+            }
+        }
+        return index;
+    }
+
 
     private void say_async(QiContext qiContext, String text){
         Locale locale = new Locale(Language.GERMAN, Region.GERMANY);
@@ -350,184 +386,66 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         } else {
             sign = -1;
         }
-
-        JSONParser parser = new JSONParser();
-        JSONObject questionsObj = (JSONObject) parser.parse(new FileReader("./questions.json"));
-        JSONArray questionsArr = (JSONArray) questionsObj.get("questions");
-
-        JSONObject newquestionsObj = new JSONObject();
-        JSONArray newquestionsArr = new JSONArray();
-
-        newquestionsObj.put("keywords", questionsObj.get("keywords"));
-
-
-        for (int i=0; i<questionsArr.length(); i++) {
-            JSONObject question = (JSONObject) questionsArr.get(i);
-            if (question.getString("question") == question_text) {
-
-                JSONArray keyweights = question.getJSONArray("keyweights");
-                JSONArray newkeyweights = new JSONArray();
-
-                int sum_keyprobs_over05 = 0;
-                int sum_keyprobs_under05 = 0;
-
-                for (int j=0; j<keyweights.length(); j++) {
-                    if (heard_keys[j] > 0.5) {
-                        sum_keyprobs_over05 += heard_keys[j];
-                    } else {
-                        sum_keyprobs_under05 -= heard_keys[j]-1;
-                    }
-                }
-
-                for (int j=0; j<keyweights.length(); j++) {
-
-                    if (heard_keys[j] > 0.5) {
-                        newkeyweights.put(j, keyweights.getDouble(j) + sign * (heard_keys[j]/sum_keyprobs_over05) * learning_rate );
-                    } else {
-                        newkeyweights.put(j, keyweights.getDouble(j) + sign * -1 * (heard_keys[j]/sum_keyprobs_under05) * learning_rate );
-                    }
-                }
-
-                JSONObject newquestion = new JSONObject();
-
-                newquestion.put("question", question.getString("question"));
-                newquestion.put("answer", question.getString("answer"));
-                newquestion.put("count", question.getInt("count"));
-                newquestion.put("keyweights", newkeyweights);
-
-                newquestionsArr.put(newquestion);
-            } else {
-                newquestionsArr.put(question);
-            }
-        }
-
-        newquestionsObj.put("questions", newquestionsArr);
-
         try {
+            JSONArray questionsArr = (JSONArray) questionsObj.get("questions");
+
+            JSONObject newquestionsObj = new JSONObject();
+            JSONArray newquestionsArr = new JSONArray();
+
+            newquestionsObj.put("keywords", questionsObj.get("keywords"));
+
+
+            for (int i = 0; i < questionsArr.length(); i++) {
+                JSONObject question = (JSONObject) questionsArr.get(i);
+                if (question.getString("question") == question_text) {
+
+                    JSONArray keyweights = question.getJSONArray("keyweights");
+                    JSONArray newkeyweights = new JSONArray();
+
+                    int sum_keyprobs_over05 = 0;
+                    int sum_keyprobs_under05 = 0;
+
+                    for (int j = 0; j < keyweights.length(); j++) {
+                        if (heard_keys[j] > 0.5) {
+                            sum_keyprobs_over05 += heard_keys[j];
+                        } else {
+                            sum_keyprobs_under05 -= heard_keys[j] - 1;
+                        }
+                    }
+
+                    for (int j = 0; j < keyweights.length(); j++) {
+
+                        if (heard_keys[j] > 0.5) {
+                            newkeyweights.put(j, keyweights.getDouble(j) + sign * (heard_keys[j] / sum_keyprobs_over05) * learning_rate);
+                        } else {
+                            newkeyweights.put(j, keyweights.getDouble(j) + sign * -1 * (heard_keys[j] / sum_keyprobs_under05) * learning_rate);
+                        }
+                    }
+
+                    JSONObject newquestion = new JSONObject();
+
+                    newquestion.put("question", question.getString("question"));
+                    newquestion.put("answer", question.getString("answer"));
+                    newquestion.put("count", question.getInt("count"));
+                    newquestion.put("keyweights", newkeyweights);
+
+                    newquestionsArr.put(newquestion);
+                } else {
+                    newquestionsArr.put(question);
+                }
+            }
+
+            newquestionsObj.put("questions", newquestionsArr);
+
             FileWriter file; // public static
             file = new FileWriter("./questions.json");
             file.write(newquestionsObj.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-    }
-
-    public int question(QiContext qiContext,String text,JSONArray answers ) {
-        JSONArray answer;
-        Listen listen;
-        ListenResult listenResult = null;
-        int answersetnum = 0;
-        PhraseSet set1 = null;
-        PhraseSet set2 = null;
-        PhraseSet set3 = null;
-        PhraseSet set4 = null;
-        int listlength = answers.length();
-        String[] words = {};
-        if (listlength > 0) {
-            try {
-                answer = (JSONArray) answers.get(0);
-                for (int i = 0; i < answer.length(); i++) {
-                    words[i] = (String) answer.get(i);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            set1 = PhraseSetBuilder.with(qiContext)
-                    .withTexts(words)
-                    .build();
-            Arrays.fill(words, null);
-            if (listlength > 1) {
-                try {
-                    answer = (JSONArray) answers.get(1);
-                    for (int i = 0; i < answer.length(); i++) {
-                        words[i] = (String) answer.get(i);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                set2 = PhraseSetBuilder.with(qiContext)
-                        .withTexts(words)
-                        .build();
-                Arrays.fill(words, null);
-                if (listlength > 2) {
-                    try {
-                        answer = (JSONArray) answers.get(2);
-                        for (int i = 0; i < answer.length(); i++) {
-                            words[i] = (String) answer.get(i);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    set3 = PhraseSetBuilder.with(qiContext)
-                            .withTexts(words)
-                            .build();
-                    Arrays.fill(words, null);
-                    if (listlength == 4) {
-                        try {
-                            answer = (JSONArray) answers.get(3);
-                            for (int i = 0; i < answer.length(); i++) {
-                                words[i] = (String) answer.get(i);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        set4 = PhraseSetBuilder.with(qiContext)
-                                .withTexts(words)
-                                .build();
-                        Arrays.fill(words, null);
-                    } else {
-                        say_sync(qiContext, "es scheint so als wäre ein Problem aufgetreten");
-                    }
-                }
-            }
-        }
-
-        switch (listlength) {
-            case 1:
-                listen = ListenBuilder.with(qiContext)
-                        .withPhraseSets(set1)
-                        .build();
-
-                listenResult = listen.run();
-                break;
-            case 2:
-                listen = ListenBuilder.with(qiContext)
-                        .withPhraseSets(set1, set2)
-                        .build();
-
-                listenResult = listen.run();
-                break;
-            case 3:
-                listen = ListenBuilder.with(qiContext)
-                        .withPhraseSets(set1, set2, set3)
-                        .build();
-
-                listenResult = listen.run();
-                break;
-            case 4:
-                listen = ListenBuilder.with(qiContext)
-                        .withPhraseSets(set1, set2, set3, set4)
-                        .build();
-
-                listenResult = listen.run();
-                break;
-        }
-        Phrase heardPhrase = listenResult.getHeardPhrase();
-        PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
-        if (matchedPhraseSet == set1) {
-            answersetnum = 0;
-        }
-        if (matchedPhraseSet == set2) {
-            answersetnum = 1;
-        }
-        if (matchedPhraseSet == set3) {
-            answersetnum = 2;
-        }
-        if (matchedPhraseSet == set4) {
-            answersetnum = 3;
-        }
-        return answersetnum;
     }
 
     public ArrayList<Map<String, Object>> faqHandler(double[] heard_keys){
@@ -574,9 +492,9 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     public ArrayList<Map<String, Object>> rating(ArrayList<Double> weighted_keysums, ArrayList<Double> frequencies) {
         // double freqParameter = 0.5;
         ArrayList<Map<String, Object>> rated_questions = null;
-        JSONArray questions = (JSONArray) questionsObj.getJSONArray("questions");
 
         try {
+            JSONArray questions = questionsObj.getJSONArray("questions");
             for (int i = 0; i < questions.length(); i++) {
                 double rating = weighted_keysums.get(i) + frequencies.get(i);
                 HashMap<String, Object> rated_question = new HashMap();
@@ -612,7 +530,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         return rated_questions;
     }
 
-    public static void animation(QiContext qiContext, JSONArray animationNames){
+    public void animation(QiContext qiContext, String animationName){
         Animation fist = AnimationBuilder.with(qiContext) // Create the builder with the context.
                 .withResources(R.raw.fist) // Set the animation resource.
                 .build(); // Build the animation.
@@ -658,14 +576,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         Animation wave = AnimationBuilder.with(qiContext) // Create the builder with the context.
                 .withResources(R.raw.wave) // Set the animation resource.
                 .build(); // Build the animation.
-
-        int rnd = new Random().nextInt(animationNames.length());
-        String animationName = "standart";
-        try {
-            animationName = animationNames.getString(rnd);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         switch(animationName){
             case "fist":
@@ -741,7 +651,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         .build().async().run(); // Build the animate action and run it
                 break;
             default:
-                System.out.println("fehler");
+                say_sync(qiContext, "Ich kenne die auszuführende Aktion nicht.");
                 break;
         }
     }
@@ -867,10 +777,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 JSONArray nein = new JSONArray();
                 nein.put(0, "nein");
                 answers.put(0, nein);
-            } catch (JSONException e) {
-
-            }
-
+            } catch (JSONException e) {}
             int another_int = question(qiContext, "Möchtest du eine ANDERE FRAGE auswählen?", another_answers);
 
             another = another_int == 0;
