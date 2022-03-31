@@ -235,6 +235,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         JSONParser parser = new JSONParser();
         next = "start";
         String type;
+        JSONArray then;
         String text;
         String event;
         JSONArray answers;
@@ -247,7 +248,9 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         while (!conversation_finished) {
             try {
                 JSONObject actionObj = (JSONObject) dialogsObj.get(next);
-                next = (String) actionObj.get("then");
+
+                then = actionObj.getJSONArray("then");
+                next = then.getString(0);
                 type = (String) actionObj.get("type");
                 switch (type) {
                     case "talk":
@@ -259,7 +262,8 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         texts = (JSONObject) actionObj.get("texts");
                         text = (String) texts.get(profile.formality());
                         answers = (JSONArray) actionObj.get("answers");
-                        question(qiContext, text, answers);
+                        int index = question(qiContext, text, answers);
+                        next = then.getString(index);
                         break;
                     case "animation":
                         animationfiles = (JSONArray) actionObj.get("filename");
