@@ -240,6 +240,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         JSONObject displaytexts;
         String displaytext;
         String action;
+        int rnd;
         Boolean conversation_finished = false;
         while (!conversation_finished) {
             try {
@@ -251,14 +252,16 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 switch (type) {
                     case "talk":
                         texts = (JSONObject) actionObj.get("texts");
-                        text = (String) texts.get(profile.formality());
-                        say_sync(qiContext, text);
+                        textSet = (JSONArray) texts.get(profile.formality());
+                        rnd = new Random().nextInt(textSet.length());
+                        say_sync(qiContext, textSet.getString(rnd));
                         break;
                     case "question":
                         texts = (JSONObject) actionObj.get("texts");
-                        text = (String) texts.get(profile.formality());
+                        textSet = (JSONArray) texts.get(profile.formality());
+                        rnd = new Random().nextInt(textSet.length());
                         answers = (JSONArray) actionObj.get("answers");
-                        int index = question(qiContext, text, answers);
+                        int index = question(qiContext, textSet.getString(rnd), answers);
                         next = then.getString(index);
                         break;
                     case "animation":
