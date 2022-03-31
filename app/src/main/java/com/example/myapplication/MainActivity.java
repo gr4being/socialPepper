@@ -233,7 +233,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         next = "start";
         String type;
         JSONArray then;
-        String text;
+        JSONArray textSet;
         String event;
         JSONArray answers;
         JSONObject texts;
