@@ -275,13 +275,14 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         next = "start";
         String type;
         JSONArray then;
-        String text;
+        JSONArray textSet;
         String event;
         JSONArray answers;
         JSONObject texts;
         JSONObject displaytexts;
         String displaytext;
         String action;
+        int rnd;
         Boolean conversation_finished = false;
         say_sync(qiContext, "Wir reden nun");
         while (!conversation_finished) {
@@ -304,15 +305,16 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                     case "talk":
                         say_sync(qiContext, "Wir talken nun");
                         texts = (JSONObject) actionObj.get("texts");
-                        text = (String) texts.get(profile.formality());
-                        say_sync(qiContext, text);
+                        textSet = (JSONArray) texts.get(profile.formality());
+                        rnd = new Random().nextInt(textSet.length());
+                        say_sync(qiContext, textSet.getString(rnd));
                         break;
                     case "question":
                         texts = (JSONObject) actionObj.get("texts");
-                        text = (String) texts.get(profile.formality());
-
+                        textSet = (JSONArray) texts.get(profile.formality());
+                        rnd = new Random().nextInt(textSet.length());
                         answers = (JSONArray) actionObj.get("answers");
-                        int index = question(qiContext, text, answers);
+                        int index = question(qiContext, textSet.getString(rnd), answers);
                         next = then.getString(index);
                         break;
                     case "animation":
