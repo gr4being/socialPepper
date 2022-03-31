@@ -829,6 +829,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
         }
 
+        Boolean another = false;
         do {
             int q_idx = question(qiContext, "Passt Frage eins, zwei, drei oder vier am besten?", answers);
 
@@ -872,23 +873,19 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
             JSONArray another_answers = new JSONArray();
             try {
-                JSONArray andere = new JSONArray();
-                andere.put(0, "andere");
-                answers.put(0, andere);
-                JSONArray neue = new JSONArray();
-                neue.put(0, "neue");
-                answers.put(0, neue);
-                JSONArray spaß = new JSONArray();
-                spaß.put(0, "spaß");
-                answers.put(0, spaß);
-            }catch (JSONException e) {
+                JSONArray ja = new JSONArray();
+                ja.put(0, "ja");
+                answers.put(0, ja);
+                JSONArray nein = new JSONArray();
+                nein.put(0, "nein");
+                answers.put(0, nein);
+            } catch (JSONException e) {
 
             }
 
-            int another_int = question(qiContext, "Möchtest du eine ANDERE FRAGE auswählen, eine NEUE FRAGE stellen oder SPAß HABEN?", another_answers);
+            int another_int = question(qiContext, "Möchtest du eine ANDERE FRAGE auswählen?", another_answers);
 
-            Boolean another = another_int == 0;
-            next = (another_int==1)? "faq" : "";
+            another = another_int == 0;
 
         } while (another);
     }
