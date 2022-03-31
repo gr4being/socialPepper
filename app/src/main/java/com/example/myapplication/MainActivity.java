@@ -262,7 +262,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         break;
                     case "animation":
                         JSONObject animationfiles = (JSONObject) actionObj.get("filename");
-                        animation(qiContext, animationfiles, profile);
+                        animation(qiContext, animationfiles.getString(profile.formality()));
                         break;
                     case "display":
                         displaytexts = (JSONObject) actionObj.get("texts");
@@ -300,8 +300,10 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         }
     }
 
-    public void standby() {
-        // run random animations
+    public void standby(QiContext qiContext) {
+        String[] standbyAnimations = {"stand1", "stand2", "stand3"};
+        int rnd = new Random().nextInt(standbyAnimations.length);
+        animation(qiContext, standbyAnimations[rnd]);
 
     }
 
@@ -623,7 +625,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         return rated_questions;
     }
 
-    public void animation(QiContext qiContext, JSONObject animationNames, Profile profile){
+    public void animation(QiContext qiContext, String animationName){
         Animation fist = AnimationBuilder.with(qiContext) // Create the builder with the context.
                 .withResources(R.raw.fist) // Set the animation resource.
                 .build(); // Build the animation.
@@ -669,13 +671,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         Animation wave = AnimationBuilder.with(qiContext) // Create the builder with the context.
                 .withResources(R.raw.wave) // Set the animation resource.
                 .build(); // Build the animation.
-
-        String animationName = "standart";
-        try {
-            animationName = animationNames.getString(profile.formality());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         switch(animationName){
             case "fist":
