@@ -55,6 +55,8 @@ import com.aldebaran.qi.sdk.object.humanawareness.HumanAwareness;
 import com.aldebaran.qi.sdk.object.locale.Language;
 import com.aldebaran.qi.sdk.object.locale.Locale;
 import com.aldebaran.qi.sdk.object.locale.Region;
+import com.aldebaran.qi.sdk.object.touch.Touch;
+import com.aldebaran.qi.sdk.object.touch.TouchSensor;
 import com.aldebaran.qi.sdk.util.PhraseSetUtil;
 
 import org.json.JSONArray;
@@ -71,8 +73,10 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     private Activity mainActivity;
     public String[] a_ar = new String[]{};
+    private boolean wait = false;
 
     JSONObject questionsObj = null;
+    private TouchSensor headTouchSensor;
     JSONObject dialogsObj = null;
     String jsonString = null;
     Boolean humanEnganged = false;
@@ -90,14 +94,27 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, PackageManager.PERMISSION_GRANTED);
     }
 
+    private void eventwait () {
+        wait = true;
+        while (wait){
+            Log.i("evenwati", "waiting");
+        }
+    }
+
 
     protected void onDestroy() {
         QiSDK.unregister(this, this);
         super.onDestroy();
     }
 
-    //Das macht der Pepper sobald das Programm startet
     public void onRobotFocusGained(QiContext qiContext) {
+        Touch touch = qiContext.getTouch();
+        headTouchSensor = touch.getSensor("Head/Touch");
+        headTouchSensor.addOnStateChangedListener(touchState -> {
+            Log.i("ttt", "Sensor " + (touchState.getTouched() ? "touched" : "released") + " at " + touchState.getTime());
+            wait = false;
+        });
+
         try {
             InputStream is = getApplicationContext().getAssets().open("robot/questions.json");
             int size = is.available();
@@ -137,6 +154,11 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 ApproachHuman approachHuman = ApproachHumanBuilder.with(qiContext)
                         .withHuman(human)
                         .build();
+
+
+
+
+
                 approachHuman.async().run();
                 EngageHuman engageHuman = EngageHumanBuilder.with(qiContext)
                         .withHuman(human)
@@ -195,14 +217,13 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 changeText(a_ar[4]);
             }
         });
-        Button back_button = (Button) findViewById(R.id.back_btn);
+        Button back_button = (Button) findViewById(R.id.btn_back);
         back_button.setOnClickListener(new View.OnClickListener() {
             public void onClick (View view) {
                 Log.i("aa", "back clicked");
-                JSONParser parser = new JSONParser();
-                JSONObject dialogsObj = (JSONObject) parser.parse(new FileReader("./dialogs.json"));
-                JSONObject action = dialogsObj.getJSONObject(next);
-                next = action.getString("before");
+                JSONObject action = null;
+                try { action = dialogsObj.getJSONObject(next); } catch (JSONException e) { e.printStackTrace(); }
+                try { next = action.getString("before"); } catch (JSONException e) { e.printStackTrace(); }
             }
         });
     }
@@ -223,7 +244,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         String displaytext;
         String action;
         Boolean conversation_finished = false;
-        JSONObject dialogsObj = (JSONObject) parser.parse(new FileReader("./dialogs.json"));
         while (!conversation_finished) {
             try {
                 JSONObject actionObj = (JSONObject) dialogsObj.get(next);
@@ -254,10 +274,10 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         action = (String) actionObj.get("action");
                         switch (action) {
                             case "faq":
-                                faq(qiContext,questionObj);
+                                faq(qiContext);
                                 break;
                             case "tictactoe":
-                                tictacttoe();
+                                //tictacttoe(); never gonna happen
                                 break;
                             default:
                                 say_sync(qiContext, "es scheint so als wäre ein Problem aufgetreten");
@@ -370,7 +390,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         sum_keyprobs_under05 -= heard_keys[j]-1;
                     }
                 }
-
 
                 for (int j=0; j<keyweights.length(); j++) {
 
