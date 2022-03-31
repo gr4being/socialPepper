@@ -238,7 +238,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         String text;
         String event;
         JSONArray answers;
-        JSONArray animationfiles;
         JSONObject texts;
         JSONObject displaytexts;
         String displaytext;
@@ -262,8 +261,8 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         question(qiContext, text, answers);
                         break;
                     case "animation":
-                        animationfiles = (JSONArray) actionObj.get("filename");
-                        animation(qiContext, animationfiles);
+                        JSONObject animationfiles = (JSONObject) actionObj.get("filename");
+                        animation(qiContext, animationfiles, profile);
                         break;
                     case "display":
                         displaytexts = (JSONObject) actionObj.get("texts");
@@ -624,7 +623,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         return rated_questions;
     }
 
-    public static void animation(QiContext qiContext, JSONArray animationNames){
+    public void animation(QiContext qiContext, JSONObject animationNames, Profile profile){
         Animation fist = AnimationBuilder.with(qiContext) // Create the builder with the context.
                 .withResources(R.raw.fist) // Set the animation resource.
                 .build(); // Build the animation.
@@ -671,10 +670,9 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 .withResources(R.raw.wave) // Set the animation resource.
                 .build(); // Build the animation.
 
-        int rnd = new Random().nextInt(animationNames.length());
         String animationName = "standart";
         try {
-            animationName = animationNames.getString(rnd);
+            animationName = animationNames.getString(profile.formality());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -753,7 +751,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         .build().async().run(); // Build the animate action and run it
                 break;
             default:
-                System.out.println("fehler");
+                say_sync(qiContext, "Ich kenne die auszuführende Aktion nicht.");
                 break;
         }
     }
