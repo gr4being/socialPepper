@@ -23,15 +23,16 @@
         android:id="@+id/btn_test"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test"
-        app:iconTint="#fc030f"
         android:background="@android:color/holo_red_dark"
+        android:text="Test"
         android:textColor="@android:color/black"
+        app:iconTint="#fc030f"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mytextview_id"
-        app:layout_constraintVertical_bias="0.342" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/btn_back"
