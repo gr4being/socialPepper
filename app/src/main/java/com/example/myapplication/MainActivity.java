@@ -319,7 +319,9 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         break;
                     case "animation":
                         JSONObject animationfiles = (JSONObject) actionObj.get("filename");
-                        animation(qiContext, animationfiles.getString(profile.formality()));
+                        JSONArray animationSet = (JSONArray) animationfiles.get(profile.formality());
+                        rnd = new Random().nextInt(animationSet.length());
+                        animation(qiContext, animationSet.getString(rnd));
                         break;
                     case "display":
                         displaytext = (String) actionObj.getString("texts");
