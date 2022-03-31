@@ -63,6 +63,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class MainActivity extends RobotActivity implements RobotLifecycleCallbacks {
 
@@ -553,6 +554,47 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             }
         }
         return rated_questions;
+    }
+
+    public static void animation(QiContext qiContext, JSONArray animationNames){
+        Animation fist = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.fist) // Set the animation resource.
+                .build(); // Build the animation.
+        Animation handshake = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.handshake) // Set the animation resource.
+                .build(); // Build the animation.
+        Animation nod_no = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.nod_no) // Set the animation resource.
+                .build(); // Build the animation.
+
+        int rnd = new Random().nextInt(animationNames.length());
+        String animationName = "standart";
+        try {
+            animationName = animationNames.getString(rnd);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        switch(animationName){
+            case "fist":
+                Animate fistAnimate = AnimateBuilder.with(qiContext) // Create the builder with the context.
+                        .withAnimation(fist) // Set the animation.
+                        .build(); // Build the animate action
+                break;
+            case "handshake":
+                Animate handshakeAnimate = AnimateBuilder.with(qiContext) // Create the builder with the context.
+                        .withAnimation(handshake) // Set the animation.
+                        .build(); // Build the animate action
+                break;
+            case "nod_no":
+                Animate nod_noAnitmate = AnimateBuilder.with(qiContext) // Create the builder with the context.
+                        .withAnimation(nod_no) // Set the animation.
+                        .build(); // Build the animate action
+                break;
+            default:
+                System.out.println("fehler");
+                break;
+        }
     }
 }
 
