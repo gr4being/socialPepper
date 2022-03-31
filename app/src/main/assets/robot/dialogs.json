@@ -6,13 +6,13 @@
   },
   "greet": {
     "type": "animation",
-    "filename": {"teen":"fist", "child":"wave", "adult":"handshake"},
+    "filename": {"teen":["fist"], "child":["wave"], "adult":["handshake"]},
     "then": ["q1display"]
   },
 
   "q1display": {
     "type": "display",
-    "texts": "gut\nschön\nmittel\nschlecht\nnicht gut",
+    "texts": "  schön / mittel / schlecht",
     "then": ["question1"]
   },
 
@@ -56,7 +56,7 @@
   "question2": {
     "type": "question",
     "texts": {"teen": ["Willst du wissen was ich kann oder was fragen?","Hast du eine Frage oder soll ich ein bisschen flexen?"],"child":["Willst du wissen was ich tun kann oder hast du eine Frage?", "Soll ich dir bei einer Frage helfen oder ein bisschen über mich reden?"], "adult":["Wollen Sie wissen was ich tun kann oder haben Sie eine Frage?","Kann ich Ihnen bei einer Frage helfen oder soll ich mich vorstellen?"]},
-    "answers": [["Frage","helfen","Problem"],["wissen","tun","kannst"],["nein","danke","nicht"]],
+    "answers": [["Frage","helfen","Problem"],["wissen","tun","kannst", "flexen"],["nein","danke","nicht"]],
     "then": ["faq", "think", "byequestion"]
   },
 
@@ -140,13 +140,7 @@
   "faq":{
     "type": "action",
     "action": "faq",
-    "then": ["questionfaq"]
-  },
-  "questionfaq": {
-    "type": "question",
-    "texts": {"teen": ["Hat das geholfen?"],"child": ["Konnte ich dir helfen?","War das hilfreich für dich?"],"adult": ["Hat Ihnen das weitergeholfen?","Konnte ich Ihnen damit helfen?"]},
-    "answers": [["ja","danke"],["nein","nicht"]],
-    "then": ["main","forewarding1"]
+    "then": ["main"]
   },
 
   "main2safety": {

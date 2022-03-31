@@ -80,6 +80,22 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     Boolean humanEnganged = false;
     Profile profile = null;
 
+    Animation fist = null;
+    Animation handshake = null;
+    Animation nod_no = null;
+    Animation nod_yes = null;
+    Animation show_hand = null;
+    Animation show_screen = null;
+    Animation show_self = null;
+    Animation show_user = null;
+    Animation skispringer = null;
+    Animation stand1 = null;
+    Animation stand2 = null;
+    Animation stand3 = null;
+    Animation thinking = null;
+    Animation verbeugen = null;
+    Animation wave = null;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         QiSDK.register(this, this);
@@ -130,6 +146,51 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     public void onRobotFocusGained(QiContext qiContext) {
         Log.i("aa", "focus gained");
 
+        fist = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.fist) // Set the animation resource.
+                .build(); // Build the animation.
+        handshake = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.handshake) // Set the animation resource.
+                .build(); // Build the animation.
+        nod_no = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.nod_no) // Set the animation resource.
+                .build(); // Build the animation.
+        nod_yes = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.nod_yes) // Set the animation resource.
+                .build(); // Build the animation.
+        show_hand = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.show_hand) // Set the animation resource.
+                .build(); // Build the animation.
+        show_screen = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.show_screen) // Set the animation resource.
+                .build(); // Build the animation.
+        show_self = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.show_self) // Set the animation resource.
+                .build(); // Build the animation.
+        show_user = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.show_user) // Set the animation resource.
+                .build(); // Build the animation.
+        skispringer = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.skispringer) // Set the animation resource.
+                .build(); // Build the animation.
+        stand1 = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.stand1) // Set the animation resource.
+                .build(); // Build the animation.
+        stand2 = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.stand2) // Set the animation resource.
+                .build(); // Build the animation.
+        stand3 = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.stand3) // Set the animation resource.
+                .build(); // Build the animation.
+        thinking = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.thinking) // Set the animation resource.
+                .build(); // Build the animation.
+        verbeugen = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.verbeugen) // Set the animation resource.
+                .build(); // Build the animation.
+        wave = AnimationBuilder.with(qiContext) // Create the builder with the context.
+                .withResources(R.raw.wave) // Set the animation resource.
+                .build(); // Build the animation.
 
         try {
             InputStream is = getApplicationContext().getAssets().open("robot/questions.json");
@@ -162,7 +223,15 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             e.printStackTrace();
         }
 
-        Touch touch = qiContext.getTouch();
+        humanEnganged = true;
+        HumanAwareness humanAwareness = qiContext.getHumanAwareness();
+        Human human = humanAwareness.getRecommendedHumanToApproach();
+
+        profile = new Profile();
+        profile.age = 12;//human.getEstimatedAge().getYears();
+        conversation(qiContext, profile);
+
+        /*Touch touch = qiContext.getTouch();
         headTouchSensor = touch.getSensor("Head/Touch");
         headTouchSensor.addOnStateChangedListener(touchState -> {
             if (touchState.getTouched()) {
@@ -176,7 +245,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             }
             Log.i("ttt", "Sensor " + (touchState.getTouched() ? "touched" : "released") + " at " + touchState.getTime());
             wait = false;
-        });
+        });*/
         //eventwait();
 
         /*HumanAwareness humanAwareness = qiContext.getHumanAwareness();
@@ -220,7 +289,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             public void onClick (View view) {
                 Log.i("aa", "button question 1 clicked");
                 say_async(qiContext, a_ar[0]);
-                changeText(a_ar[0]);
+                //changeText(a_ar[0]);
             }
         });
         Button test = (Button) findViewById(R.id.btn_test);
@@ -235,7 +304,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             public void onClick (View view) {
                 Log.i("aa", "button question 2 clicked");
                 say_async(qiContext, a_ar[1]);
-                changeText(a_ar[1]);
+                //changeText(a_ar[1]);
             }
         });
         Button question_button_3 = (Button) findViewById(R.id.btn_question_3);
@@ -243,7 +312,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             public void onClick (View view) {
                 Log.i("aa", "button question 3 clicked");
                 say_async(qiContext, a_ar[2]);
-                changeText(a_ar[2]);
+                //changeText(a_ar[2]);
             }
         });
         Button question_button_4 = (Button) findViewById(R.id.btn_question_4);
@@ -251,7 +320,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             public void onClick (View view) {
                 Log.i("aa", "button question 4 clicked");
                 say_async(qiContext, a_ar[3]);
-                changeText(a_ar[3]);
+                //changeText(a_ar[3]);
             }
         });
         Button back_button = (Button) findViewById(R.id.btn_back);
@@ -267,9 +336,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     String next;
 
     public void conversation (QiContext qiContext, Profile profile) {
-        say_sync(qiContext, "Wir reden jezt");
-
-
         // get dialogs from file
         next = "start";
         String type;
@@ -283,30 +349,23 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         String action;
         int rnd;
         Boolean conversation_finished = false;
-        say_sync(qiContext, "Wir reden nun");
         while (!conversation_finished) {
             try {
-                say_sync(qiContext, "Wir reden");
                 say_sync(qiContext, next);
 
                 JSONObject actionObj = (JSONObject) dialogsObj.get(next);
 
 
                 then = actionObj.getJSONArray("then");
-                say_sync(qiContext, "then");
                 next = then.getString(0);
-                say_sync(qiContext, "next");
                 type = actionObj.getString("type");
-                say_sync(qiContext, "type");
                 say_sync(qiContext, type);
 
                 switch (type) {
                     case "talk":
-                        say_sync(qiContext, "Wir talken nun");
                         texts = (JSONObject) actionObj.get("texts");
                         textSet = (JSONArray) texts.get(profile.formality());
                         rnd = new Random().nextInt(textSet.length());
-                        say_sync(qiContext, textSet.getString(rnd));
                         break;
                     case "question":
                         texts = (JSONObject) actionObj.get("texts");
@@ -323,8 +382,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                         animation(qiContext, animationSet.getString(rnd));
                         break;
                     case "display":
-                        displaytext = (String) actionObj.getString("texts");
-                        //displaytext = (String) displaytexts.get(profile.formality());
+                        displaytext = actionObj.getString("texts");
                         display(qiContext, displaytext);
                         break;
                     case "action":
@@ -373,15 +431,24 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     }
 
     public int question(QiContext qiContext,String text,JSONArray answers ) {
-        say_async(qiContext,text);
+        say_sync(qiContext,text);
+        say_sync(qiContext, answers.toString());
         int index = 0;
         ArrayList<String[]> words = new ArrayList<String[]>();
+        Integer len = answers.length();
+
         for(int i=0;i<answers.length();i++){
             try {
-                words.add((String[]) answers.get(i));
+                JSONArray answer = answers.getJSONArray(i);
+                String[] phrase = new String[answer.length()];
+                for (int j=0; j<answer.length(); j++) {
+                    phrase[j] = answer.getString(j);
+                }
+                words.add(phrase);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
         }
         List<PhraseSet> keywordsAsSets = new ArrayList<PhraseSet>();
         for (int k=0; k<answers.length(); k++) {
@@ -393,15 +460,17 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 .withPhraseSets(keywordsAsSets)
                 .build();
         ListenResult listenResult = listen.run();
-
         PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
+        say_sync(qiContext, matchedPhraseSet.toString());
         //int[] heard_keys = new int[answers.length()];
         for (int i = 0; i < answers.length(); i++) {
+            say_sync(qiContext, keywordsAsSets.get(i).toString());
             if (matchedPhraseSet.equals(keywordsAsSets.get(i))) {
+                say_sync(qiContext, "matching");
                 index = i; //momentan ist es nur möglich, dass ein einzelnes Keyword erkannt wird.
                 //mit einem anderen Sprachinterpreten könnten mehrere Keywörter erkannt werden und
             } else {
-                index = 0;
+
             }
         }
         return index;
@@ -411,7 +480,12 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     private void changeText(String text){
         TextView textView  = findViewById(R.id.mytextview_id);
-        textView.setText(text);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                textView.setText(text);
+            }
+        });
     }
 
     public void display(QiContext qiContext,String displayText ){
@@ -423,8 +497,10 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         c.setVisibility(View.INVISIBLE);
         View d = findViewById(R.id.btn_question_4);
         d.setVisibility(View.INVISIBLE);
-
         changeText(displayText);
+
+
+
     }
 
     public void update_keyweights(QiContext qiContext, String question_text, double[] heard_keys, Boolean correct) {
@@ -540,7 +616,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     public ArrayList<Map<String, Object>> rating(ArrayList<Double> weighted_keysums, ArrayList<Double> frequencies) {
         // double freqParameter = 0.5;
-        ArrayList<Map<String, Object>> rated_questions = null;
+        ArrayList<Map<String, Object>> rated_questions = new ArrayList<Map<String, Object>>();
 
         try {
             JSONArray questions = questionsObj.getJSONArray("questions");
@@ -565,9 +641,9 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 // Checking elements
                 HashMap<String, Object> temp = new HashMap<String, Object>();
                 HashMap<String, Object> first_q = (HashMap<String, Object>) rated_questions.get(j);
-                int first_r = (Integer) first_q.get("rating");
+                double first_r = (Double) first_q.get("rating");
                 HashMap<String, Object> second_q = (HashMap<String, Object>) rated_questions.get(i);
-                int second_r = (Integer) second_q.get("rating");
+                double second_r = (Double) second_q.get("rating");
                 if (first_r < second_r) {
                     // Swapping
                     temp = (HashMap<String, Object>) rated_questions.get(i);
@@ -580,52 +656,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     }
 
     public void animation(QiContext qiContext, String animationName){
-        Animation fist = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.fist) // Set the animation resource.
-                .build(); // Build the animation.
-        Animation handshake = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.handshake) // Set the animation resource.
-                .build(); // Build the animation.
-        Animation nod_no = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.nod_no) // Set the animation resource.
-                .build(); // Build the animation.
-        Animation nod_yes = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.nod_yes) // Set the animation resource.
-                .build(); // Build the animation.
-        Animation show_hand = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.show_hand) // Set the animation resource.
-                .build(); // Build the animation.
-        Animation show_screen = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.show_screen) // Set the animation resource.
-                .build(); // Build the animation.
-        Animation show_self = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.show_self) // Set the animation resource.
-                .build(); // Build the animation.
-        Animation show_user = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.show_user) // Set the animation resource.
-                .build(); // Build the animation.
-        Animation skispringer = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.skispringer) // Set the animation resource.
-                .build(); // Build the animation.
-        Animation stand1 = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.stand1) // Set the animation resource.
-                .build(); // Build the animation.
-        Animation stand2 = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.stand2) // Set the animation resource.
-                .build(); // Build the animation.
-        Animation stand3 = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.stand3) // Set the animation resource.
-                .build(); // Build the animation.
-        Animation thinking = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.thinking) // Set the animation resource.
-                .build(); // Build the animation.
-        Animation verbeugen = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.verbeugen) // Set the animation resource.
-                .build(); // Build the animation.
-        Animation wave = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.wave) // Set the animation resource.
-                .build(); // Build the animation.
-
         switch(animationName){
             case "fist":
                 AnimateBuilder.with(qiContext) // Create the builder with the context.
@@ -722,12 +752,12 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 e.printStackTrace();
             }
         }
+        say_sync(qiContext, "Stell mir deine Frage! Ich höre zu!");
         Listen listen = ListenBuilder.with(qiContext)
                 .withPhraseSets(keywordsAsSets)
                 .build();
 
         ListenResult listenResult = listen.run();
-
         PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
         double[] heard_keys = new double[keywords.length()];
         for (int i = 0; i < keywords.length(); i++) {
@@ -738,25 +768,29 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 heard_keys[i] = 0;
             }
         }
-
         ArrayList<Map<String, Object>> rated_questions = faqHandler(heard_keys);
 
         Button btn_a = findViewById(R.id.btn_question_1);
-        btn_a.setText("1: "+(String) rated_questions.get(-1).get("question"));
         Button btn_b = findViewById(R.id.btn_question_2);
-        btn_b.setText("2: "+(String) rated_questions.get(-2).get("question"));
         Button btn_c = findViewById(R.id.btn_question_3);
-        btn_c.setText("3: "+(String) rated_questions.get(-3).get("question"));
         Button btn_d = findViewById(R.id.btn_question_4);
-        btn_d.setText("4: "+(String) rated_questions.get(-4).get("question"));
 
-        btn_a.setVisibility(View.VISIBLE);
-        //View view_b = findViewById(R.id.btn_question_2);
-        btn_b.setVisibility(View.VISIBLE);
-        //View view_c = findViewById(R.id.btn_question_3);
-        btn_c.setVisibility(View.VISIBLE);
-        //View view_d = findViewById(R.id.btn_question_4);
-        btn_d.setVisibility(View.VISIBLE);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btn_a.setText("1: "+(String) rated_questions.get(rated_questions.size()-1).get("question"));
+                btn_b.setText("2: "+(String) rated_questions.get(rated_questions.size()-2).get("question"));
+                btn_c.setText("3: "+(String) rated_questions.get(rated_questions.size()-3).get("question"));
+                btn_d.setText("4: "+(String) rated_questions.get(rated_questions.size()-4).get("question"));
+                btn_a.setVisibility(View.VISIBLE);
+                //View view_b = findViewById(R.id.btn_question_2);
+                btn_b.setVisibility(View.VISIBLE);
+                //View view_c = findViewById(R.id.btn_question_3);
+                btn_c.setVisibility(View.VISIBLE);
+                //View view_d = findViewById(R.id.btn_question_4);
+                btn_d.setVisibility(View.VISIBLE);
+            }
+        });
 
         JSONArray answers = new JSONArray();
         try {
@@ -765,56 +799,67 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             answers.put(0, eins);
             JSONArray zwei = new JSONArray();
             zwei.put(0, "zwei");
-            answers.put(0, zwei);
+            answers.put(1, zwei);
             JSONArray drei = new JSONArray();
             drei.put(0, "drei");
-            answers.put(0, drei);
+            answers.put(2, drei);
             JSONArray vier = new JSONArray();
             vier.put(0, "vier");
-            answers.put(0, vier);
+            answers.put(3, vier);
         }catch (JSONException e) {
 
         }
-
         Boolean another = false;
         do {
-            int q_idx = question(qiContext, "Passt Frage eins, zwei, drei oder vier am besten?", answers);
+            Integer q_idx = question(qiContext, "Passt Frage eins, zwei, drei oder vier am besten?", answers);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    btn_a.setVisibility(View.INVISIBLE);
+                    //View view_b = findViewById(R.id.btn_question_2);
+                    btn_b.setVisibility(View.INVISIBLE);
+                    //View view_c = findViewById(R.id.btn_question_3);
+                    btn_c.setVisibility(View.INVISIBLE);
+                    //View view_d = findViewById(R.id.btn_question_4);
+                    btn_d.setVisibility(View.INVISIBLE);
+                }
+            });
 
 
-            btn_a.setVisibility(View.INVISIBLE);
-            //View view_b = findViewById(R.id.btn_question_2);
-            btn_b.setVisibility(View.INVISIBLE);
-            //View view_c = findViewById(R.id.btn_question_3);
-            btn_c.setVisibility(View.INVISIBLE);
-            //View view_d = findViewById(R.id.btn_question_4);
-            btn_d.setVisibility(View.INVISIBLE);
 
-            changeText((String) rated_questions.get(-(q_idx + 1)).get("answer"));
+            changeText((String) rated_questions.get(rated_questions.size()-(q_idx + 1)).get("answer"));
 
-            say_sync(qiContext, (String) rated_questions.get(-(q_idx + 1)).get("answer"));
+            say_sync(qiContext, (String) rated_questions.get(rated_questions.size()-(q_idx + 1)).get("answer"));
 
             JSONArray correct_answers = new JSONArray();
             try {
                 JSONArray ja = new JSONArray();
                 ja.put(0, "ja");
-                answers.put(0, ja);
+                correct_answers.put(0, ja);
                 JSONArray nein = new JSONArray();
                 nein.put(0, "nein");
-                answers.put(0, nein);
+                correct_answers.put(1, nein);
             } catch (JSONException e) {
 
             }
             int correct = question(qiContext, "War diese Antwort Hilfreich?", correct_answers);
 
-            update_keyweights(qiContext, (String) rated_questions.get(-(q_idx + 1)).get("question"), heard_keys, correct == 0);
+            update_keyweights(qiContext, (String) rated_questions.get(rated_questions.size()-(q_idx + 1)).get("question"), heard_keys, correct == 0);
 
-            btn_a.setVisibility(View.VISIBLE);
-            //View view_b = findViewById(R.id.btn_question_2);
-            btn_b.setVisibility(View.VISIBLE);
-            //View view_c = findViewById(R.id.btn_question_3);
-            btn_c.setVisibility(View.VISIBLE);
-            //View view_d = findViewById(R.id.btn_question_4);
-            btn_d.setVisibility(View.VISIBLE);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    btn_a.setVisibility(View.VISIBLE);
+                    //View view_b = findViewById(R.id.btn_question_2);
+                    btn_b.setVisibility(View.VISIBLE);
+                    //View view_c = findViewById(R.id.btn_question_3);
+                    btn_c.setVisibility(View.VISIBLE);
+                    //View view_d = findViewById(R.id.btn_question_4);
+                    btn_d.setVisibility(View.VISIBLE);
+
+                    changeText("");
+                }
+            });
 
             changeText("");
 
@@ -822,10 +867,10 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             try {
                 JSONArray ja = new JSONArray();
                 ja.put(0, "ja");
-                answers.put(0, ja);
+                another_answers.put(0, ja);
                 JSONArray nein = new JSONArray();
                 nein.put(0, "nein");
-                answers.put(0, nein);
+                another_answers.put(1, nein);
             } catch (JSONException e) {}
             int another_int = question(qiContext, "Möchtest du eine ANDERE FRAGE auswählen?", another_answers);
 
