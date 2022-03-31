@@ -15,7 +15,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import org.json.JSONException;
-import org.json.simple.parser.JSONParser;
 
 
 import java.io.FileNotFoundException;
@@ -232,7 +231,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     public void conversation (QiContext qiContext, Profile profile) {
 
         // get dialogs from file
-        JSONParser parser = new JSONParser();
         next = "start";
         String type;
         JSONArray then;
@@ -368,8 +366,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             sign = -1;
         }
 
-        JSONParser parser = new JSONParser();
-        JSONObject questionsObj = (JSONObject) parser.parse(new FileReader("./questions.json"));
         JSONArray questionsArr = (JSONArray) questionsObj.get("questions");
 
         JSONObject newquestionsObj = new JSONObject();
@@ -876,10 +872,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 JSONArray nein = new JSONArray();
                 nein.put(0, "nein");
                 answers.put(0, nein);
-            } catch (JSONException e) {
-
-            }
-
+            } catch (JSONException e) {}
             int another_int = question(qiContext, "Möchtest du eine ANDERE FRAGE auswählen?", another_answers);
 
             another = another_int == 0;
