@@ -75,6 +75,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     JSONObject questionsObj = null;
     JSONObject dialogsObj = null;
     String jsonString = null;
+    Boolean humanEnganged = false;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,6 +132,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         HumanAwareness humanAwareness = qiContext.getHumanAwareness();
         humanAwareness.addOnEngagedHumanChangedListener(human -> {
             if (human != null) {
+                humanEnganged = true;
                 // Human recommendedHuman = humanAwareness.getRecommendedHumanToApproach();
                 ApproachHuman approachHuman = ApproachHumanBuilder.with(qiContext)
                         .withHuman(human)
@@ -148,6 +150,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 profile.age = human.getEstimatedAge().getYears();
                 conversation(qiContext, profile);
             } else {
+                humanEnganged = false;
                 standby();
             }
         });
@@ -520,21 +523,21 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         return answersetnum;
     }
 
-    public static ArrayList<Map<String, Object>> faqHandler(JSONObject questionsJSON, int[] foundKeys){
+    public ArrayList<Map<String, Object>> faqHandler(double[] heard_keys){
         ArrayList<Map<String, Object>> rated_questions = new ArrayList<Map<String, Object>>();
         ArrayList<Double> weighted_keysums = new ArrayList<Double>();
         ArrayList<Double> frequencies = new ArrayList<Double>();
 
         // calculate weighted_keysums
         try {
-            JSONArray questions = (JSONArray) questionsJSON.get("questions");
-            JSONArray keywords = (JSONArray) questionsJSON.get("keywords");
+            JSONArray questions = (JSONArray) questionsObj.getJSONArray("questions");
+            JSONArray keywords = (JSONArray) questionsObj.getJSONArray("keywords");
             for (int i = 0; i < questions.length(); i++) {
                 double sum = 0;
                 JSONObject question = (JSONObject) questions.get(i);
                 for (int j = 0; j < keywords.length(); j++) {
                     JSONArray keyweights = (JSONArray) question.get("keyweights");
-                    sum += keyweights.getInt(j) * foundKeys[j];
+                    sum += keyweights.getInt(j) * heard_keys[j];
                 }
                 weighted_keysums.add(sum);
             }
@@ -561,9 +564,10 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         return rated_questions;
     }
 
-    public static ArrayList<Map<String, Object>> rating(JSONArray questions, ArrayList<Double> weighted_keysums, ArrayList<Double> frequencies) {
+    public ArrayList<Map<String, Object>> rating(ArrayList<Double> weighted_keysums, ArrayList<Double> frequencies) {
         // double freqParameter = 0.5;
         ArrayList<Map<String, Object>> rated_questions = null;
+        JSONArray questions = (JSONArray) questionsObj.getJSONArray("questions");
 
         try {
             for (int i = 0; i < questions.length(); i++) {
@@ -738,15 +742,19 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     public void faq(QiContext qiContext) {
         JSONArray keywords = null;
         try {
-            keywords = (JSONArray) questionsObj.getJSONArray("keywords");
+            keywords = questionsObj.getJSONArray("keywords");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         List<PhraseSet> keywordsAsSets = new ArrayList<PhraseSet>();
         for (int i=0; i<keywords.length(); i++) {
-            keywordsAsSets.add(PhraseSetBuilder.with(qiContext)
-                    .withTexts(keywords.getString(i))
-                    .build());
+            try {
+                keywordsAsSets.add(PhraseSetBuilder.with(qiContext)
+                        .withTexts(keywords.getString(i))
+                        .build());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         Listen listen = ListenBuilder.with(qiContext)
                 .withPhraseSets(keywordsAsSets)
@@ -755,16 +763,115 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         ListenResult listenResult = listen.run();
 
         PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
-        double[] foundKeys = new double[keywords.length()];
+        double[] heard_keys = new double[keywords.length()];
         for (int i = 0; i < keywords.length(); i++) {
             if (matchedPhraseSet.equals(keywordsAsSets.get(i))) {
-                foundKeys[i] = 1; //momentan ist es nur möglich, dass ein einzelnes Keyword erkannt wird.
+                heard_keys[i] = 1; //momentan ist es nur möglich, dass ein einzelnes Keyword erkannt wird.
                 //mit einem anderen Sprachinterpreten könnten mehrere Keywörter erkannt werden und
             } else {
-                foundKeys[i] = 0;
+                heard_keys[i] = 0;
             }
         }
 
+        ArrayList<Map<String, Object>> rated_questions = faqHandler(heard_keys);
+
+        Button btn_a = findViewById(R.id.btn_question_1);
+        btn_a.setText("1: "+(String) rated_questions.get(-1).get("question"));
+        Button btn_b = findViewById(R.id.btn_question_2);
+        btn_b.setText("2: "+(String) rated_questions.get(-2).get("question"));
+        Button btn_c = findViewById(R.id.btn_question_3);
+        btn_c.setText("3: "+(String) rated_questions.get(-3).get("question"));
+        Button btn_d = findViewById(R.id.btn_question_4);
+        btn_d.setText("4: "+(String) rated_questions.get(-4).get("question"));
+
+        btn_a.setVisibility(View.VISIBLE);
+        //View view_b = findViewById(R.id.btn_question_2);
+        btn_b.setVisibility(View.VISIBLE);
+        //View view_c = findViewById(R.id.btn_question_3);
+        btn_c.setVisibility(View.VISIBLE);
+        //View view_d = findViewById(R.id.btn_question_4);
+        btn_d.setVisibility(View.VISIBLE);
+
+        JSONArray answers = new JSONArray();
+        try {
+            JSONArray eins = new JSONArray();
+            eins.put(0, "eins");
+            answers.put(0, eins);
+            JSONArray zwei = new JSONArray();
+            zwei.put(0, "zwei");
+            answers.put(0, zwei);
+            JSONArray drei = new JSONArray();
+            drei.put(0, "drei");
+            answers.put(0, drei);
+            JSONArray vier = new JSONArray();
+            vier.put(0, "vier");
+            answers.put(0, vier);
+        }catch (JSONException e) {
+
+        }
+
+        do {
+            int q_idx = question(qiContext, "Passt Frage eins, zwei, drei oder vier am besten?", answers);
+
+
+            btn_a.setVisibility(View.INVISIBLE);
+            //View view_b = findViewById(R.id.btn_question_2);
+            btn_b.setVisibility(View.INVISIBLE);
+            //View view_c = findViewById(R.id.btn_question_3);
+            btn_c.setVisibility(View.INVISIBLE);
+            //View view_d = findViewById(R.id.btn_question_4);
+            btn_d.setVisibility(View.INVISIBLE);
+
+            changeText((String) rated_questions.get(-(q_idx + 1)).get("answer"));
+
+            say_sync(qiContext, (String) rated_questions.get(-(q_idx + 1)).get("answer"));
+
+            JSONArray correct_answers = new JSONArray();
+            try {
+                JSONArray ja = new JSONArray();
+                ja.put(0, "ja");
+                answers.put(0, ja);
+                JSONArray nein = new JSONArray();
+                nein.put(0, "nein");
+                answers.put(0, nein);
+            } catch (JSONException e) {
+
+            }
+            int correct = question(qiContext, "War diese Antwort Hilfreich?", correct_answers);
+
+            update_keyweights(qiContext, (String) rated_questions.get(-(q_idx + 1)).get("question"), heard_keys, correct == 0);
+
+            btn_a.setVisibility(View.VISIBLE);
+            //View view_b = findViewById(R.id.btn_question_2);
+            btn_b.setVisibility(View.VISIBLE);
+            //View view_c = findViewById(R.id.btn_question_3);
+            btn_c.setVisibility(View.VISIBLE);
+            //View view_d = findViewById(R.id.btn_question_4);
+            btn_d.setVisibility(View.VISIBLE);
+
+            changeText("");
+
+            JSONArray another_answers = new JSONArray();
+            try {
+                JSONArray andere = new JSONArray();
+                andere.put(0, "andere");
+                answers.put(0, andere);
+                JSONArray neue = new JSONArray();
+                neue.put(0, "neue");
+                answers.put(0, neue);
+                JSONArray spaß = new JSONArray();
+                spaß.put(0, "spaß");
+                answers.put(0, spaß);
+            }catch (JSONException e) {
+
+            }
+
+            int another_int = question(qiContext, "Möchtest du eine ANDERE FRAGE auswählen, eine NEUE FRAGE stellen oder SPAß HABEN?", another_answers);
+
+            Boolean another = another_int == 0;
+            next = (another_int==1)? "faq" : "";
+
+        } while (another);
     }
 }
 
